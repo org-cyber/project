@@ -519,7 +519,16 @@ color:var(--text-muted);
 .form-grid { grid-template-columns:1fr; }
 }
 @media (max-width:768px) {
-.sidebar { transform:translateX(-100%); }
+.app { flex-direction:column; }
+.sidebar {
+position:relative;
+transform:none;
+width:100%;
+height:auto;
+min-height:auto;
+border-right:none;
+border-bottom:1px solid var(--border);
+}
 .main { margin-left:0; padding:16px; }
 .top-bar { flex-direction:column; gap:12px; align-items:stretch; }
 .search-box { width:100%; }

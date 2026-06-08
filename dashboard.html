@@ -955,7 +955,16 @@ font-family:inherit;
 }
 
 @media (max-width:768px) {
-.sidebar { transform:translateX(-100%); }
+.app { flex-direction:column; }
+.sidebar {
+position:relative;
+transform:none;
+width:100%;
+height:auto;
+min-height:auto;
+border-right:none;
+border-bottom:1px solid var(--border);
+}
 .main { margin-left:0; padding:16px; }
 .stats-row { grid-template-columns:1fr; }
 .metrics-row { flex-direction:column; gap:16px; }
