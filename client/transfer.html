@@ -524,37 +524,50 @@
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
   import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-  onAuthStateChanged(auth, user => {
-    if (!user) window.location.href = 'index.html';
+  // Wait for Firebase to tell us the ACTUAL auth state, then stop listening
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    unsubscribe(); // only care about the first emission
+    if (!user) {
+      console.log('No user found, redirecting to login');
+      window.location.href = 'index.html';
+    } else {
+      console.log('User is logged in:', user.email);
+    }
   });
 
   const form = document.querySelector('form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
-    if (!user) return alert("Not logged in");
+    if (!user) {
+      alert("Not logged in");
+      window.location.href = 'index.html';
+      return;
+    }
 
     const inputs = form.querySelectorAll('input, select, textarea');
-    const toName = inputs[0].value;
-    const toBank = inputs[1].value;
-    const toAccount = inputs[2].value;
-    const toPhone = inputs[3].value;
-    const toEmail = inputs[4].value;
-    const swift = inputs[5].value;
+    const toName = inputs[0].value.trim();
+    const toBank = inputs[1].value.trim();
+    const toAccount = inputs[2].value.trim();
+    const toPhone = inputs[3].value.trim();
+    const toEmail = inputs[4].value.trim();
+    const swift = inputs[5].value.trim();
     const amount = parseFloat(inputs[6].value) || 0;
     const option = inputs[7].value;
     const pin = inputs[8].value;
-    const reason = inputs[9].value;
+    const reason = inputs[9].value.trim();
 
-    if (!amount || !toName || !reason) return alert("Please fill all required fields");
-const userRef = doc(db, "users", user.uid);
-const userDoc = await getDoc(userRef);
-let userData = userDoc.data();
+    if (!amount || amount <= 0) return alert("Please enter a valid amount");
+    if (!toName || !reason) return alert("Please fill all required fields");
 
-if (!userData) {
-  await setDoc(userRef, { email: user.email, balance: 10000, pin: "", createdAt: new Date() });
-  userData = { balance: 10000, pin: "" };
-} {};
+    const userRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userRef);
+    let userData = userDoc.data();
+
+    if (!userData) {
+      await setDoc(userRef, { email: user.email, balance: 10000, pin: "", createdAt: new Date() });
+      userData = { balance: 10000, pin: "" };
+    }
 
     if (userData.pin && userData.pin !== pin) {
       return alert("Incorrect PIN");
@@ -572,8 +585,8 @@ if (!userData) {
       status: "completed"
     });
 
-    await updateDoc(doc(db, "users", user.uid), {
-      balance: (userData.balance || 10000) - amount
+    await updateDoc(userRef, {
+      balance: userData.balance - amount
     });
 
     alert("Transfer recorded successfully");
