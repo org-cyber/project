@@ -406,7 +406,7 @@ from { opacity:0; transform:translateY(20px); }
 to { opacity:1; transform:translateY(0); }
 }
 </style>
-<base target="_blank">
+
 </head>
 <body>
 <div class="bg-orb orb-1"></div>
@@ -469,13 +469,13 @@ to { opacity:1; transform:translateY(0); }
 </div>
 <form id="loginForm" autocomplete="off">
 <div class="input-group">
-<div class="input-label"><span>Username</span></div>
+<div class="input-label"><span>email</span></div>
 <div class="input-wrap">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
 <circle cx="12" cy="7" r="4"/>
 </svg>
-<input type="text" id="username" placeholder="Enter username" autocomplete="off">
+<input type="email" id="email" placeholder="Enter email" autocomplete="off">
 </div>
 </div>
 <div class="input-group">
@@ -515,7 +515,7 @@ Sign In
 <line x1="15" y1="9" x2="9" y2="15"/>
 <line x1="9" y1="9" x2="15" y2="15"/>
 </svg>
-Invalid username or password. Please try again.
+Invalid email or password. Please try again.
 </div>
 </form>
 <div class="form-footer">
@@ -524,39 +524,35 @@ Need help? <a href="#">Contact system administrator</a>
 </div>
 </div>
 </div>
-
 <script type="module">
-import { auth, db } from './firebase-config.js';
-console.log("Firebase Auth object:", auth);
-console.log("Firebase DB object:", db);
+  import { auth } from './firebase-config.js';
+  import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 
-function togglePw() {
-const input = document.getElementById('password');
-const icon = document.getElementById('eyeIcon');
-if (input.type === 'password') {
-input.type = 'text';
-icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-} else {
-input.type = 'password';
-icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-}
-}
+  const form = document.getElementById('loginForm');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const errorMsg = document.getElementById('errorMsg');
 
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-e.preventDefault();
-const u = document.getElementById('username').value.trim();
-const p = document.getElementById('password').value.trim();
-const err = document.getElementById('errorMsg');
-if (u === 'admin' && p === 'admin123') {
-err.classList.remove('show');
-window.location.href = 'dashboard.html';
-} else {
-err.classList.add('show');
-document.getElementById('password').value = '';
-document.getElementById('password').focus();
-}
-});
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    errorMsg.classList.remove('show');
 
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+     window.location.href = 'dashboard.html';
+    } catch (err) {
+      console.error('Firebase auth error:', err.code, err.message);
+      let friendly = 'Invalid email or password. Please try again.';
+      if (err.code === 'auth/user-not-found') friendly = 'No account found with this email.';
+      if (err.code === 'auth/wrong-password') friendly = 'Incorrect password.';
+      if (err.code === 'auth/invalid-email') friendly = 'Please enter a valid email address.';
+      if (err.code === 'auth/invalid-credential') friendly = 'Email or password is incorrect.';
+      errorMsg.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ${friendly}`;
+      errorMsg.classList.add('show');
+    }
+  });
 </script>
 </body>
 </html>

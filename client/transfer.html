@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fundwise — Transfer Fund</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #fafafa;
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+    color: #333;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 200px;
+    min-width: 200px;
+    background: #fff;
+    border-right: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    height: 100vh;
+  }
+  .logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+    padding: 0 20px 22px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .logo-icon {
+    width: 22px; height: 22px;
+    background: #7c3aed;
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 12px; height: 12px; fill: white; }
+  .sidebar-section-label {
+    font-size: 11px;
+    color: #aaa;
+    font-weight: 500;
+    padding: 0 20px 8px;
+    letter-spacing: 0.02em;
+  }
+  .sidebar-nav { list-style: none; margin-bottom: 18px; }
+  .sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    font-size: 13.5px;
+    color: #555;
+    text-decoration: none;
+    border-radius: 0;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  .sidebar-nav li a:hover { background: #f7f7f7; }
+  .sidebar-nav li.active a {
+    background: #f4f0ff;
+    color: #7c3aed;
+    font-weight: 500;
+    border-radius: 8px;
+    margin: 0 8px;
+    padding: 8px 12px;
+  }
+  .nav-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
+  .active .nav-icon { opacity: 1; }
+  .sidebar-bottom {
+    margin-top: auto;
+    padding: 0;
+  }
+  .sidebar-bottom .sidebar-nav li a { font-size: 13px; }
+  .theme-toggle {
+    display: flex;
+    margin: 12px 16px 0;
+    background: #f5f5f5;
+    border-radius: 20px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .theme-btn {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 6px 8px;
+    border-radius: 16px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .theme-btn.active {
+    background: #fff;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  /* Main */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #fafafa;
+    height: 100vh;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .search-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 7px 14px;
+    color: #aaa;
+    font-size: 13px;
+  }
+  .search-bar input {
+    border: none; background: none;
+    font-size: 13px; color: #555; outline: none; width: 100%;
+  }
+  .search-bar input::placeholder { color: #aaa; }
+  .topbar-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-create {
+    background: none;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #444;
+    font-weight: 500;
+  }
+  .btn-add-funds {
+    background: none;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #444;
+    font-weight: 500;
+  }
+  .btn-move {
+    background: #7c3aed;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #fff;
+    font-weight: 500;
+  }
+  .notif-btn {
+    position: relative;
+    background: none; border: none; cursor: pointer;
+    width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+  }
+  .notif-dot {
+    position: absolute; top: 5px; right: 6px;
+    width: 7px; height: 7px; background: #ef4444; border-radius: 50%;
+    border: 1.5px solid #fff;
+  }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: white; cursor: pointer;
+    overflow: hidden;
+  }
+
+  /* Content */
+  .content-main {
+    flex: 1;
+    padding: 24px 28px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Page header */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .page-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #111;
+    letter-spacing: -0.3px;
+  }
+  .page-subtitle {
+    font-size: 13px;
+    color: #888;
+    margin-top: 2px;
+  }
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #555;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .back-btn:hover { background: #f9f9f9; }
+
+  /* Card */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    padding: 24px;
+    max-width: 720px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 20px;
+  }
+
+  /* Form */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 20px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-group.full-width {
+    grid-column: 1 / -1;
+  }
+  .form-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .required { color: #ef4444; }
+  .form-input, .form-select, .form-textarea {
+    background: #f8f8f8;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13.5px;
+    color: #222;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: #c4b5fd;
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.08);
+  }
+  .form-input::placeholder, .form-textarea::placeholder { color: #bbb; }
+  .form-select {
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 30px;
+  }
+  .form-select option { color: #222; }
+  .form-textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+  .btn-primary {
+    background: #7c3aed;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 28px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-primary:hover { background: #6d28d9; }
+  .btn-primary:active { transform: scale(0.98); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 2px; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      Fundwise
+    </div>
+
+    <div class="sidebar-section-label">General</div>
+    <ul class="sidebar-nav">
+      <li class="active">
+        <a href="dashboard.html">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a href="transfer.html">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Payments
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          Cards
+        </a>
+      </li>
+      <li>
+        <a href="trans_details.html">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Account Statement
+        </a>
+      </li>
+      <li>
+        <a href="pass_change.html">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Change Password
+        </a>
+      </li>
+      <li>
+        <a href="change_pin.html">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+          Change Pin
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-section-label">Support</div>
+    <ul class="sidebar-nav">
+      <li>
+        <a href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Help
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Feedback
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-bottom">
+      <ul class="sidebar-nav">
+        <li>
+          <a href="#">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+            Settings
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Logout
+          </a>
+        </li>
+      </ul>
+      <div class="theme-toggle">
+        <button class="theme-btn active">☀ Light</button>
+        <button class="theme-btn">🌙 Dark</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Top bar -->
+    <div class="topbar">
+      <div class="search-bar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search anything...">
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-create">Create New</button>
+        <button class="btn-add-funds">Add Funds</button>
+        <button class="btn-move">Move Money</button>
+        <button class="notif-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div class="notif-dot"></div>
+        </button>
+        <div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#d97706);">T</div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content-main">
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">Transfer Fund</div>
+          <div class="page-subtitle">Send money to a recipient securely</div>
+        </div>
+        <button class="back-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          Back
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recipient Details</div>
+        <form class="form-grid">
+          <div class="form-group">
+            <label class="form-label"><span class="required">*</span> Receiver's Full Name</label>
+            <input class="form-input" type="text" placeholder="e.g. John Doe">
+          </div>
+          <div class="form-group">
+            <label class="form-label"><span class="required">*</span> Receiver's Bank Name</label>
+            <input class="form-input" type="text" placeholder="e.g. Chase Bank">
+          </div>
+          <div class="form-group">
+            <label class="form-label"><span class="required">*</span> Receiver's Account Number</label>
+            <input class="form-input" type="text" placeholder="0000 0000 0000 0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label"><span class="required">*</span> Receiver's Phone Number</label>
+            <input class="form-input" type="tel" placeholder="+1 (555) 000-0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label"><span class="required">*</span> Receiver's Email</label>
+            <input class="form-input" type="email" placeholder="recipient@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label"><span class="required">*</span> Swift / ABA Routing Number</label>
+            <input class="form-input" type="text" placeholder="e.g. 021000021">
+          </div>
+          <div class="form-group">
+            <label class="form-label"><span class="required">*</span> Amount to Transfer</label>
+            <input class="form-input" type="text" placeholder="$0.00">
+          </div>
+          <div class="form-group">
+            <label class="form-label"><span class="required">*</span> Select Transfer Option</label>
+            <select class="form-select">
+              <option value="" disabled selected>Select transfer option</option>
+              <option value="same-day">Same-Day Transfer</option>
+              <option value="standard">Standard Transfer (1-2 days)</option>
+              <option value="instant">Instant Transfer</option>
+              <option value="international">International Wire</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label"><span class="required">*</span> Enter Account PIN to Verify Transaction</label>
+            <input class="form-input" type="password" maxlength="6" placeholder="••••••">
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label"><span class="required">*</span> Reason for Fund Transfer</label>
+            <textarea class="form-textarea" placeholder="e.g. Invoice payment, family support, business expense..."></textarea>
+          </div>
+          <div class="form-group full-width">
+            <div class="form-actions">
+              <button class="btn-primary" type="submit">
+                Transfer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+<script type="module">
+  import { auth, db } from './firebase-config.js';
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+  import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+  onAuthStateChanged(auth, user => {
+    if (!user) window.location.href = 'index.html';
+  });
+
+  const form = document.querySelector('form');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+    if (!user) return alert("Not logged in");
+
+    const inputs = form.querySelectorAll('input, select, textarea');
+    const toName = inputs[0].value;
+    const toBank = inputs[1].value;
+    const toAccount = inputs[2].value;
+    const toPhone = inputs[3].value;
+    const toEmail = inputs[4].value;
+    const swift = inputs[5].value;
+    const amount = parseFloat(inputs[6].value) || 0;
+    const option = inputs[7].value;
+    const pin = inputs[8].value;
+    const reason = inputs[9].value;
+
+    if (!amount || !toName || !reason) return alert("Please fill all required fields");
+const userRef = doc(db, "users", user.uid);
+const userDoc = await getDoc(userRef);
+let userData = userDoc.data();
+
+if (!userData) {
+  await setDoc(userRef, { email: user.email, balance: 10000, pin: "", createdAt: new Date() });
+  userData = { balance: 10000, pin: "" };
+} {};
+
+    if (userData.pin && userData.pin !== pin) {
+      return alert("Incorrect PIN");
+    }
+    if ((userData.balance || 0) < amount) {
+      return alert("Insufficient balance");
+    }
+
+    await addDoc(collection(db, "transactions"), {
+      fromUserId: user.uid,
+      fromEmail: user.email,
+      toName, toBank, toAccount, toPhone, toEmail, swift,
+      amount, option, reason,
+      timestamp: serverTimestamp(),
+      status: "completed"
+    });
+
+    await updateDoc(doc(db, "users", user.uid), {
+      balance: (userData.balance || 10000) - amount
+    });
+
+    alert("Transfer recorded successfully");
+    form.reset();
+  });
+</script>
+</body>
+</html>
