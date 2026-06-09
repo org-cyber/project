@@ -524,14 +524,17 @@
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
   import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-  // Wait for Firebase to tell us the ACTUAL auth state, then stop listening
-  const unsubscribe = onAuthStateChanged(auth, (user) => {
-    unsubscribe(); // only care about the first emission
+  onAuthStateChanged(auth, (user) => {
     if (!user) {
       console.log('No user found, redirecting to login');
       window.location.href = 'index.html';
     } else {
       console.log('User is logged in:', user.email);
+      // Update avatar to first letter of email
+      const avatar = document.querySelector('.avatar');
+      if (avatar && user.email) {
+        avatar.textContent = user.email[0].toUpperCase();
+      }
     }
   });
 

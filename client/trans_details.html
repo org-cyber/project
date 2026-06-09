@@ -307,6 +307,11 @@
       window.location.href = 'index.html';
       return;
     }
+    // Update avatar to first letter of email
+    const avatar = document.querySelector('.avatar');
+    if (avatar && user.email) {
+      avatar.textContent = user.email[0].toUpperCase();
+    }
     loadTransactions(user.uid);
   });
 

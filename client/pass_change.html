@@ -261,7 +261,15 @@
   import { onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 
   onAuthStateChanged(auth, user => {
-    if (!user) window.location.href = 'index.html';
+    if (!user) {
+      window.location.href = 'index.html';
+    } else {
+      // Update avatar to first letter of email
+      const avatar = document.querySelector('.avatar');
+      if (avatar && user.email) {
+        avatar.textContent = user.email[0].toUpperCase();
+      }
+    }
   });
 
   const form = document.querySelector('form');
