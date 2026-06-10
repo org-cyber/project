@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fundwise — Transfer Fund</title>
+<script>
+  // Synchronous theme initialization to prevent FOUC
+  (function() {
+    const savedTheme = localStorage.getItem('synergy-theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -189,9 +198,25 @@
   }
 
   /* Content */
+  .content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
   .content-main {
     flex: 1;
     padding: 24px 28px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .right-panel {
+    width: 260px;
+    min-width: 260px;
+    background: #fff;
+    border-left: 1px solid #f0f0f0;
+    padding: 20px 16px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -298,6 +323,185 @@
     min-height: 80px;
   }
 
+  /* Loading Overlay */
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .loader-spinner {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f0f0f0;
+    border-top-color: #7c3aed;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .loading-overlay.active {
+    display: flex;
+  }
+
+  .loading-box {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .loading-text {
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+  }
+
+  /* Confirmation Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    animation: modalSlideUp 0.3s ease-out;
+  }
+
+  @keyframes modalSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .modal-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 20px;
+    background: #f0fdf4;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+  }
+
+  .modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .modal-description {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .modal-details {
+    background: #f8f8f8;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+  }
+
+  .modal-detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .modal-detail-row:last-child {
+    margin-bottom: 0;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 8px;
+    margin-top: 8px;
+    font-weight: 600;
+    color: #111;
+  }
+
+  .modal-detail-label {
+    color: #888;
+  }
+
+  .modal-detail-value {
+    color: #222;
+    font-weight: 500;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .modal-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s;
+  }
+
+  .modal-btn-primary {
+    background: #7c3aed;
+    color: white;
+  }
+
+  .modal-btn-primary:hover {
+    background: #6d28d9;
+  }
+
+  .modal-btn-secondary {
+    background: #f0f0f0;
+    color: #555;
+  }
+
+  .modal-btn-secondary:hover {
+    background: #e8e8e8;
+  }
+
+  .hidden { display: none !important; }
+
   .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -330,6 +534,347 @@
     .sidebar { display: none; }
     .form-grid { grid-template-columns: 1fr; }
   }
+
+   /* My Cards */
+  .panel-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .panel-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111;
+  }
+  .add-new-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #7c3aed;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  .add-circle {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid #7c3aed;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #7c3aed;
+  }
+
+  .credit-card {
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 16px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .card-brand-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .visa-logo {
+    font-size: 17px;
+    font-weight: 800;
+    font-style: italic;
+    color: #fff;
+    letter-spacing: -1px;
+  }
+  .card-holder {
+    font-size: 11px;
+    color: #aaa;
+    margin-bottom: 5px;
+  }
+  .card-number {
+    font-size: 14px;
+    color: #fff;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+  }
+  .card-footer-item { font-size: 10px; }
+  .card-footer-label { color: #888; margin-bottom: 2px; }
+  .card-footer-val { color: #fff; font-size: 11px; }
+  .card-shine {
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* Conversion Rate */
+  .conv-section { }
+  .conv-title { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 12px; }
+  .conv-label { font-size: 11.5px; color: #888; margin-bottom: 5px; }
+  .conv-input-row {
+    display: flex;
+    align-items: center;
+    background: #f8f8f8;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    justify-content: space-between;
+  }
+  .conv-input {
+    border: none; background: none;
+    font-size: 14px; color: #222; outline: none; width: 60px;
+    font-weight: 500;
+  }
+  .currency-select {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12.5px;
+    color: #444;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .currency-arrow { color: #999; font-size: 10px; }
+  .conv-btn {
+    background: #7c3aed;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 0;
+    width: 100%;
+    font-size: 13px;
+    color: #fff;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .conv-result {
+    font-size: 12px;
+    color: #555;
+    margin-left: 8px;
+  }
+
+  /* Workflows */
+  .wf-section { }
+  .wf-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .wf-settings {
+    width: 22px; height: 22px;
+    background: #f0f0f0;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .wf-item {
+    background: #1a1a1a;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .wf-item.light-item {
+    background: #f8f8f8;
+    border: 1px solid #f0f0f0;
+  }
+  .wf-icon {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .wf-icon.dark { background: rgba(255,255,255,0.1); }
+  .wf-icon.light { background: #ede9fe; }
+  .wf-name { font-size: 13px; font-weight: 600; }
+  .wf-item .wf-name { color: #fff; }
+  .wf-item.light-item .wf-name { color: #222; }
+  .wf-sub { font-size: 11px; }
+  .wf-item .wf-sub { color: #ef4444; }
+  .wf-item.light-item .wf-sub { color: #22c55e; }
+  .wf-arrow { margin-left: auto; font-size: 12px; }
+  .wf-item .wf-arrow { color: #666; }
+  .wf-item.light-item .wf-arrow { color: #aaa; }
+  .wf-upcoming {
+    font-size: 12px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+  .wf-upcoming-arrow { font-size: 11px; }
+
+  /* Avatar colors */
+  .av-blue { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+  .av-amber { background: linear-gradient(135deg, #fcd34d, #f59e0b); }
+  .av-pink { background: linear-gradient(135deg, #f9a8d4, #ec4899); }
+  .av-gray { background: linear-gradient(135deg, #d1d5db, #9ca3af); }
+  .av-teal { background: linear-gradient(135deg, #5eead4, #14b8a6); }
+
+    /* =========================================
+     DARK THEME OVERRIDES (REFINED)
+     ========================================= */
+  
+  /* 1. Main Backgrounds (Softer dark gray, not pitch black) */
+  [data-theme="dark"] body,
+  [data-theme="dark"] .main,
+  [data-theme="dark"] .content { 
+    background: #121214; /* A softer dark gray instead of pure black */
+    color: #f4f4f5; 
+  }
+  
+  /* 2. Cards & Surfaces (Slightly lighter than the background for depth) */
+  [data-theme="dark"] .sidebar, 
+  [data-theme="dark"] .topbar, 
+  [data-theme="dark"] .balance-card, 
+  [data-theme="dark"] .quick-tx-card, 
+  [data-theme="dark"] .chart-card, 
+  [data-theme="dark"] .tx-section, 
+  [data-theme="dark"] .right-panel,
+  [data-theme="dark"] .credit-card { 
+    background: #1c1c1f; /* Subtle contrast against the #121214 background */
+    border-color: #27272a; 
+  }
+  
+  /* Typography */
+  [data-theme="dark"] .logo, 
+  [data-theme="dark"] .panel-title, 
+  [data-theme="dark"] .conv-title, 
+  [data-theme="dark"] .chart-amount, 
+  [data-theme="dark"] .balance-amount, 
+  [data-theme="dark"] .tx-name,
+  [data-theme="dark"] .wf-item .wf-name { color: #f4f4f5; }
+  
+  [data-theme="dark"] .sidebar-nav li a, 
+  [data-theme="dark"] .tx-sub, 
+  [data-theme="dark"] .balance-label, 
+  [data-theme="dark"] .chart-title, 
+  [data-theme="dark"] .conv-label { color: #a1a1aa; }
+  
+  /* Inputs & Controls */
+  [data-theme="dark"] .search-bar, 
+  [data-theme="dark"] .tx-search, 
+  [data-theme="dark"] .conv-input-row, 
+  [data-theme="dark"] .chart-period, 
+  [data-theme="dark"] .period-btn, 
+  [data-theme="dark"] .filter-btn, 
+  [data-theme="dark"] .theme-toggle { 
+    background: #27272a; border-color: #3f3f46; color: #a1a1aa; 
+  }
+  [data-theme="dark"] .search-bar input,
+  [data-theme="dark"] .tx-search input,
+  [data-theme="dark"] .conv-input { color: #f4f4f5; }
+  [data-theme="dark"] .search-bar input::placeholder,
+  [data-theme="dark"] .tx-search input::placeholder { color: #71717a; }
+
+  /* Interactive States */
+  [data-theme="dark"] .sidebar-nav li.active a { background: #2e1065; color: #c4b5fd; }
+  [data-theme="dark"] .sidebar-nav li a:hover { background: #27272a; }
+  
+  [data-theme="dark"] .btn-create, 
+  [data-theme="dark"] .btn-add-funds, 
+  [data-theme="dark"] .bal-btn { border-color: #3f3f46; color: #d4d4d8; }
+  [data-theme="dark"] .bal-btn:hover, [data-theme="dark"] .btn-create:hover { background: #27272a; }
+
+  [data-theme="dark"] .theme-btn.active { background: #3f3f46; color: #f4f4f5; box-shadow: none; }
+  
+  /* Tables, Charts & Badges */
+  [data-theme="dark"] .tx-table th { color: #71717a; border-bottom-color: #27272a; }
+  [data-theme="dark"] .tx-table td { border-bottom-color: #27272a; color: #d4d4d8; }
+  [data-theme="dark"] .badge-completed { background: #064e3b; color: #6ee7b7; }
+  [data-theme="dark"] .badge-progress { background: #713f12; color: #fcd34d; }
+  [data-theme="dark"] .bar-tooltip { color: #f4f4f5; } /* Fix tooltip text visibility on dark bars */
+  
+  /* Workflows & Misc */
+  [data-theme="dark"] .wf-item.light-item { background: #27272a; border-color: #3f3f46; }
+  [data-theme="dark"] .wf-item.light-item .wf-name { color: #f4f4f5; }
+  [data-theme="dark"] .wf-item.light-item .wf-sub { color: #4ade80; }
+  [data-theme="dark"] .wf-icon.light { background: #2e1065; }
+  [data-theme="dark"] .checkbox { border-color: #52525b; }
+    /* =========================================
+     MISSING OVERRIDES FOR trans_details.html
+     ========================================= */
+  
+  /* 1. The Table Wrapper (This page uses .card, dashboard used .tx-section) */
+  [data-theme="dark"] .card {
+    background: #1c1c1f;
+    border-color: #27272a;
+  }
+
+  /* 2. Table Row Hover (Currently hardcoded to light #fafafa) */
+  [data-theme="dark"] .tx-table tr:hover td {
+    background: #27272a; 
+  }
+
+  /* 3. Page Header Typography (Currently hardcoded to #111 and #888) */
+  [data-theme="dark"] .page-title { color: #f4f4f5; }
+  [data-theme="dark"] .page-subtitle { color: #a1a1aa; }
+
+  /* 4. Workflows Settings Button */
+  [data-theme="dark"] .wf-settings { background: #27272a; }
+  [data-theme="dark"] .wf-settings svg { stroke: #a1a1aa; }
+
+  /* 5. Empty State */
+  [data-theme="dark"] .empty-state { color: #71717a; }
+  [data-theme="dark"] .empty-state svg { stroke: #3f3f46; }
+    /* =========================================
+     MISSING OVERRIDES FOR add_funds.html
+     ========================================= */
+  
+  /* 1. Card Title */
+  [data-theme="dark"] .card-title { color: #f4f4f5; }
+
+  /* 2. Form Elements */
+  [data-theme="dark"] .form-label { color: #a1a1aa; }
+  [data-theme="dark"] .form-input { 
+    background: #27272a; 
+    border-color: #3f3f46; 
+    color: #f4f4f5; 
+  }
+  [data-theme="dark"] .form-input::placeholder { color: #71717a; }
+  
+  /* Increase focus shadow opacity so it's visible on dark backgrounds */
+  [data-theme="dark"] .form-input:focus {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.25);
+  }
+
+  /* 3. Balance Display Box */
+  /* Use a deep dark purple to match the light theme's #f4f0ff */
+  [data-theme="dark"] .balance-display { 
+    background: #2e1065; 
+    border: 1px solid #3f3f46;
+  }
+  
+  /* Override the global gray balance-label specifically for this purple box */
+  [data-theme="dark"] .balance-display .balance-label { color: #c4b5fd; } 
+  
+  /* Force override inline background colors on transaction logos */
+  [data-theme="dark"] .tx-logo { background: #27272a !important; } 
+
 </style>
 
 </head>
@@ -359,9 +904,9 @@
         </a>
       </li>
       <li>
-        <a href="#">
+        <a href="add_funds.html">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-          Cards
+          Add Funds
         </a>
       </li>
       <li>
@@ -432,9 +977,7 @@
         <input type="text" placeholder="Search anything...">
       </div>
       <div class="topbar-actions">
-        <button class="btn-create">Create New</button>
-        <button class="btn-add-funds">Add Funds</button>
-        <button class="btn-move">Move Money</button>
+      
         <button class="notif-btn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <div class="notif-dot"></div>
@@ -444,22 +987,23 @@
     </div>
 
     <!-- Content -->
-    <div class="content-main">
+    <div class="content">
+      <div class="content-main">
 
-      <div class="page-header">
-        <div>
-          <div class="page-title">Transfer Fund</div>
-          <div class="page-subtitle">Send money to a recipient securely</div>
+        <div class="page-header">
+          <div>
+            <div class="page-title">Transfer Fund</div>
+            <div class="page-subtitle">Send money to a recipient securely</div>
+          </div>
+          <button class="back-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+          </button>
         </div>
-        <button class="back-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-          Back
-        </button>
-      </div>
 
-      <div class="card">
-        <div class="card-title">Recipient Details</div>
-        <form class="form-grid">
+        <div class="card">
+          <div class="card-title">Recipient Details</div>
+          <form class="form-grid">
           <div class="form-group">
             <label class="form-label"><span class="required">*</span> Receiver's Full Name</label>
             <input class="form-input" type="text" placeholder="e.g. John Doe">
@@ -506,17 +1050,95 @@
             <label class="form-label"><span class="required">*</span> Reason for Fund Transfer</label>
             <textarea class="form-textarea" placeholder="e.g. Invoice payment, family support, business expense..."></textarea>
           </div>
-          <div class="form-group full-width">
-            <div class="form-actions">
-              <button class="btn-primary" type="submit">
-                Transfer
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-              </button>
+            <div class="form-group full-width">
+              <div class="form-actions">
+                <button class="btn-primary" type="submit">
+                  Transfer
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                </button>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
+
       </div>
 
+      <div class="right-panel">
+        <div>
+          <div class="panel-section-header">
+            <div class="panel-title">My Cards</div>
+            <button class="add-new-btn">Add New<div class="add-circle">+</div></button>
+          </div>
+          <div class="credit-card">
+            <div class="card-shine"></div>
+            <div class="card-top">
+              <div class="card-brand-name">Fundwise</div>
+              <div class="visa-logo">VISA</div>
+            </div>
+            <div class="card-holder">Thomas Fletcher</div>
+            <div class="card-number">1233  5432  3521  3090</div>
+            <div class="card-footer">
+              <div class="card-footer-item"><div class="card-footer-label">Exp</div><div class="card-footer-val">09/24</div></div>
+              <div class="card-footer-item" style="text-align:right"><div class="card-footer-label">CVV</div><div class="card-footer-val">341</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="conv-section">
+          <div class="conv-title">Conversion Rate</div>
+          <div class="conv-label">Amount</div>
+          <div class="conv-input-row"><input class="conv-input" type="text" value="238" readonly><div class="currency-select">USD <span class="currency-arrow">▾</span></div></div>
+          <div class="conv-input-row"><input class="conv-input" type="text" value="222.13" readonly><div class="currency-select">EUR <span class="currency-arrow">▾</span></div></div>
+          <button class="conv-btn">Convert →<span class="conv-result" style="color:rgba(255,255,255,0.7); font-size:11px;">238 USD = 22213 EUR</span></button>
+        </div>
+
+        <div class="wf-section">
+          <div class="wf-header"><div class="panel-title">Workflows</div><div class="wf-settings"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></div></div>
+          <div class="wf-item"><div class="wf-icon dark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="wf-name">Transactions</div><div class="wf-sub">Auto Block</div></div><div class="wf-arrow">›</div></div>
+          <div class="wf-item light-item"><div class="wf-icon light"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M3 12h1M20 12h1M12 3v1M12 20v1"/></svg></div><div><div class="wf-name">Create order</div><div class="wf-sub">Looks OK</div></div><div class="wf-arrow">›</div></div>
+          <div class="wf-upcoming">Upcoming <span class="wf-upcoming-arrow">→</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-box">
+      <div class="loader-spinner"></div>
+      <div class="loading-text">Processing your transfer...</div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="confirmationModal">
+    <div class="modal">
+      <div class="modal-icon">✓</div>
+      <div class="modal-title">Transfer Successful!</div>
+      <div class="modal-description">Your fund transfer has been completed successfully.</div>
+      
+      <div class="modal-details">
+        <div class="modal-detail-row">
+          <span class="modal-detail-label">Recipient</span>
+          <span class="modal-detail-value" id="recipientName">-</span>
+        </div>
+        <div class="modal-detail-row">
+          <span class="modal-detail-label">Amount Transferred</span>
+          <span class="modal-detail-value" id="transferAmount">-</span>
+        </div>
+        <div class="modal-detail-row">
+          <span class="modal-detail-label">Transfer Type</span>
+          <span class="modal-detail-value" id="transferType">-</span>
+        </div>
+        <div class="modal-detail-row">
+          <span class="modal-detail-label">Time</span>
+          <span class="modal-detail-value" id="transferTime">-</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-primary" id="doneButton">Done</button>
+      </div>
     </div>
   </div>
 <script type="module">
@@ -539,6 +1161,10 @@
   });
 
   const form = document.querySelector('form');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const confirmationModal = document.getElementById('confirmationModal');
+  const doneButton = document.getElementById('doneButton');
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
@@ -563,37 +1189,89 @@
     if (!amount || amount <= 0) return alert("Please enter a valid amount");
     if (!toName || !reason) return alert("Please fill all required fields");
 
-    const userRef = doc(db, "users", user.uid);
-    const userDoc = await getDoc(userRef);
-    let userData = userDoc.data();
+    // Show loading overlay
+    loadingOverlay.classList.add('active');
 
-    if (!userData) {
-      await setDoc(userRef, { email: user.email, balance: 10000, pin: "", createdAt: new Date() });
-      userData = { balance: 10000, pin: "" };
-    }
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userRef);
+      let userData = userDoc.data();
 
-    if (userData.pin && userData.pin !== pin) {
-      return alert("Incorrect PIN");
-    }
-    if ((userData.balance || 0) < amount) {
-      return alert("Insufficient balance");
-    }
+      if (!userData) {
+        await setDoc(userRef, { email: user.email, balance: 10000, pin: "", createdAt: new Date() });
+        userData = { balance: 10000, pin: "" };
+      }
 
-    await addDoc(collection(db, "transactions"), {
-      fromUserId: user.uid,
-      fromEmail: user.email,
-      toName, toBank, toAccount, toPhone, toEmail, swift,
-      amount, option, reason,
-      timestamp: serverTimestamp(),
-      status: "completed"
+      if (userData.pin && userData.pin !== pin) {
+        loadingOverlay.classList.remove('active');
+        return alert("Incorrect PIN");
+      }
+      if ((userData.balance || 0) < amount) {
+        loadingOverlay.classList.remove('active');
+        return alert("Insufficient balance");
+      }
+
+      await addDoc(collection(db, "transactions"), {
+        fromUserId: user.uid,
+        fromEmail: user.email,
+        toName, toBank, toAccount, toPhone, toEmail, swift,
+        amount, option, reason,
+        timestamp: serverTimestamp(),
+        status: "completed"
+      });
+
+      await updateDoc(userRef, {
+        balance: userData.balance - amount
+      });
+
+      // Hide loading overlay
+      loadingOverlay.classList.remove('active');
+
+      // Show confirmation modal with transfer details
+      document.getElementById('recipientName').textContent = toName;
+      document.getElementById('transferAmount').textContent = '$' + amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('transferType').textContent = option.replace('-', ' ').replace(/^\w/, (c) => c.toUpperCase());
+      document.getElementById('transferTime').textContent = new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
+      
+      confirmationModal.classList.add('active');
+      form.reset();
+    } catch (error) {
+      loadingOverlay.classList.remove('active');
+      console.error('Transfer error:', error);
+      alert('An error occurred during transfer. Please try again.');
+    }
+  });
+
+  doneButton.addEventListener('click', () => {
+    confirmationModal.classList.remove('active');
+    window.location.href = 'dashboard.html';
+  });
+
+    // --- Theme Toggle Logic ---
+  const themeBtns = document.querySelectorAll('.theme-btn');
+  
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('synergy-theme', theme);
+    
+    // Update active states on the buttons
+    themeBtns.forEach(btn => {
+      const isLightBtn = btn.textContent.includes('Light');
+      const shouldBeActive = (theme === 'light' && isLightBtn) || (theme === 'dark' && !isLightBtn);
+      btn.classList.toggle('active', shouldBeActive);
     });
+  }
 
-    await updateDoc(userRef, {
-      balance: userData.balance - amount
+  // Initialize button states on load
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(currentTheme);
+
+  // Bind click events
+  themeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const isLightBtn = btn.textContent.includes('Light');
+      applyTheme(isLightBtn ? 'light' : 'dark');
     });
-
-    alert("Transfer recorded successfully");
-    form.reset();
   });
 </script>
 </body>

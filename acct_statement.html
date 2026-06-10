@@ -61,7 +61,7 @@ z-index:100;
 transition:transform 0.25s ease;
 }
 .sidebar.open { transform: translateX(0); }
-}
+
 .sidebar-header {
 padding:0 20px 28px;
 display:flex;
@@ -518,6 +518,34 @@ margin-bottom:4px;
 font-size:12px;
 color:var(--text-muted);
 }
+
+/* Loading Animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-primary.loading {
+  pointer-events: none;
+}
+
+.btn-primary.loading::after {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 6px;
+}
+
 @media (max-width:1200px) {
 .form-grid { grid-template-columns:1fr; }
 }
@@ -563,7 +591,7 @@ box-shadow:16px 0 40px rgba(0,0,0,0.15);
 </div>
 <div class="nav-section">
 <nav class="nav-menu">
-<a href="dashboard.html" class="nav-item ">
+<a href="dashboard_admin.html" class="nav-item ">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <rect x="3" y="3" width="7" height="7" rx="1"/>
 <rect x="14" y="3" width="7" height="7" rx="1"/>
@@ -572,7 +600,7 @@ box-shadow:16px 0 40px rgba(0,0,0,0.15);
 </svg>
 Dashboard
 </a>
-<a href="register.html" class="nav-item ">
+<a href="index.html" class="nav-item ">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
 <circle cx="12" cy="7" r="4"/>
@@ -710,6 +738,32 @@ function toggleSidebar(force) {
 }
 
 function toggleCheckbox(el) { el.classList.toggle('checked'); }
+
+// Add loading animation to form submit
+const form = document.querySelector('form');
+const submitBtn = form.querySelector('.btn-primary');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  // Add loading state
+  submitBtn.classList.add('loading');
+  submitBtn.disabled = true;
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = 'Adding';
+
+  // Simulate form submission (replace with actual API call if needed)
+  setTimeout(() => {
+    // Remove loading state
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+    
+    // Reset form and show success
+    alert('Account statement added successfully');
+    form.reset();
+  }, 1500);
+});
 </script>
 </body>
 </html>

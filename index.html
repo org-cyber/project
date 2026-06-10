@@ -357,6 +357,18 @@ box-shadow:0 4px 14px rgba(79,70,229,0.3);
 }
 .submit-btn:active { transform:translateY(0); }
 .submit-btn svg { width:16px; height:16px; }
+.submit-btn.loading {
+pointer-events: none;
+opacity: 0.9;
+}
+.submit-btn.loading svg {
+animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+from { transform: rotate(0deg); }
+to { transform: rotate(360deg); }
+}
 
 .error-msg {
 display:none;
@@ -528,6 +540,9 @@ Need help? <a href="#">Contact system administrator</a>
   import { auth } from './firebase-config.js';
   import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 
+  // CHANGE THIS TO YOUR ACTUAL ADMIN EMAIL
+  const ADMIN_EMAIL = 'admin@synergy.com';
+
   const form = document.getElementById('loginForm');
   const emailInput = document.getElementById('email');
   const passwordInput = document.getElementById('password');
@@ -541,7 +556,14 @@ Need help? <a href="#">Contact system administrator</a>
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-     window.location.href = 'dashboard.html';
+      const user = auth.currentUser;
+
+      // Redirect based on role
+      if (user.email === ADMIN_EMAIL) {
+        window.location.href = 'admin_chat.html';
+      } else {
+        window.location.href = 'dashboard.html';
+      }
     } catch (err) {
       console.error('Firebase auth error:', err.code, err.message);
       let friendly = 'Invalid email or password. Please try again.';

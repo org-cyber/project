@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Synergy — Change Account Pin</title>
+<title>Fundwise — Add Funds</title>
 <script>
   // Synchronous theme initialization to prevent FOUC
   (function() {
@@ -120,21 +120,11 @@
     overflow: hidden;
   }
 
-  .content {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
   .content-main {
     flex: 1; padding: 24px 28px; overflow-y: auto;
     display: flex; flex-direction: column; gap: 20px;
-    align-items: stretch; justify-content: flex-start;
-  }
-  .right-panel {
-    width: 260px; min-width: 260px;
-    background: #fff; border-left: 1px solid #f0f0f0;
-    padding: 20px 16px; overflow-y: auto;
-    display: flex; flex-direction: column; gap: 20px;
+    align-items: center; justify-content: flex-start;
+    padding-top: 40px;
   }
 
   .card {
@@ -149,14 +139,11 @@
 
   .form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px 20px;
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
   .form-group {
     display: flex; flex-direction: column; gap: 6px;
-  }
-  .form-group.full-width {
-    grid-column: 1 / -1;
   }
   .form-label {
     font-size: 12px; font-weight: 500; color: #555;
@@ -176,6 +163,25 @@
   }
   .form-input::placeholder { color: #bbb; }
 
+  .balance-display {
+    background: #f4f0ff;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .balance-label {
+    font-size: 12px;
+    color: #7c3aed;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .balance-amount {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111;
+  }
+
   .btn-primary {
     background: #7c3aed; border: none; border-radius: 8px;
     padding: 11px 0; width: 100%; font-size: 13.5px;
@@ -186,51 +192,6 @@
   }
   .btn-primary:hover { background: #6d28d9; }
   .btn-primary:active { transform: scale(0.98); }
-  .panel-section-header {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
-  }
-  .panel-title { font-size: 14px; font-weight: 600; color: #111; }
-  .add-new-btn { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #7c3aed; cursor: pointer; background: none; border: none; padding: 0; }
-  .add-circle { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #7c3aed; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #7c3aed; }
-  .credit-card { background: #1a1a1a; border-radius: 12px; padding: 16px; color: white; position: relative; overflow: hidden; }
-  .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  .card-brand-name { font-size: 13px; font-weight: 600; color: #fff; }
-  .visa-logo { font-size: 17px; font-weight: 800; font-style: italic; color: #fff; letter-spacing: -1px; }
-  .card-holder { font-size: 11px; color: #aaa; margin-bottom: 5px; }
-  .card-number { font-size: 14px; color: #fff; letter-spacing: 1.5px; font-weight: 500; margin-bottom: 14px; }
-  .card-footer { display: flex; justify-content: space-between; }
-  .card-footer-item { font-size: 10px; }
-  .card-footer-label { color: #888; margin-bottom: 2px; }
-  .card-footer-val { color: #fff; font-size: 11px; }
-  .card-shine { position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.04); }
-  .conv-section { }
-  .conv-title { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 12px; }
-  .conv-label { font-size: 11.5px; color: #888; margin-bottom: 5px; }
-  .conv-input-row { display: flex; align-items: center; background: #f8f8f8; border: 1px solid #eee; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; justify-content: space-between; }
-  .conv-input { border: none; background: none; font-size: 14px; color: #222; outline: none; width: 60px; font-weight: 500; }
-  .currency-select { display: flex; align-items: center; gap: 4px; font-size: 12.5px; color: #444; cursor: pointer; font-weight: 500; }
-  .currency-arrow { color: #999; font-size: 10px; }
-  .conv-btn { background: #7c3aed; border: none; border-radius: 8px; padding: 10px 0; width: 100%; font-size: 13px; color: #fff; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
-  .conv-result { font-size: 12px; color: #555; margin-left: 8px; }
-  .wf-section { }
-  .wf-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .wf-settings { width: 22px; height: 22px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .wf-item { background: #1a1a1a; border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; cursor: pointer; }
-  .wf-item.light-item { background: #f8f8f8; border: 1px solid #f0f0f0; }
-  .wf-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-  .wf-icon.dark { background: rgba(255,255,255,0.1); }
-  .wf-icon.light { background: #ede9fe; }
-  .wf-name { font-size: 13px; font-weight: 600; }
-  .wf-item .wf-name { color: #fff; }
-  .wf-item.light-item .wf-name { color: #222; }
-  .wf-sub { font-size: 11px; }
-  .wf-item .wf-sub { color: #ef4444; }
-  .wf-item.light-item .wf-sub { color: #22c55e; }
-  .wf-arrow { margin-left: auto; font-size: 12px; }
-  .wf-item .wf-arrow { color: #666; }
-  .wf-item.light-item .wf-arrow { color: #aaa; }
-  .wf-upcoming { font-size: 12px; color: #888; display: flex; align-items: center; gap: 4px; cursor: pointer; }
-  .wf-upcoming-arrow { font-size: 11px; }
   .btn-primary.loading {
     pointer-events: none;
     opacity: 0.9;
@@ -250,9 +211,7 @@
 
   @media (max-width: 768px) {
     .sidebar { display: none; }
-    .form-grid { grid-template-columns: 1fr; }
   }
-
 
     /* =========================================
      DARK THEME OVERRIDES (REFINED)
@@ -409,8 +368,8 @@
     <ul class="sidebar-nav">
       <li><a href="dashboard.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a></li>
       <li><a href="transfer.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Payments</a></li>
-      <li><a href="add_funds.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Add Funds</a></li>
-      <li class="active"><a href="change_pin.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Change Pin</a></li>
+      <li><a href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Add Funds</a></li>
+      <li><a href="change_pin.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Change Pin</a></li>
       <li><a href="trans_details.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Account Statement</a></li>
       <li><a href="pass_change.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Change Password</a></li>
     </ul>
@@ -438,7 +397,7 @@
         <input type="text" placeholder="Search anything...">
       </div>
       <div class="topbar-actions">
-       
+      
         <button class="notif-btn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <div class="notif-dot"></div>
@@ -447,39 +406,31 @@
       </div>
     </div>
 
-    <div class="content">
-      <div class="content-main">
-        <div class="card">
-        <div class="card-title">Fill Information Below to Change Account Pin</div>
+    <div class="content-main">
+      <div class="card">
+        <div class="card-title">Add Funds to Your Account</div>
+        
+        <div class="balance-display">
+          <div class="balance-label">Current Balance</div>
+          <div class="balance-amount" id="currentBalance">$—</div>
+        </div>
+
         <form class="form-grid">
           <div class="form-group">
-            <label class="form-label"><span class="required">*</span> Old Pin</label>
-            <input class="form-input" type="password" maxlength="6" placeholder="••••••">
+            <label class="form-label"><span class="required">*</span> Amount to Add</label>
+            <input class="form-input" type="number" id="amount" min="1" step="0.01" placeholder="$0.00">
           </div>
           <div class="form-group">
-            <label class="form-label"><span class="required">*</span> New Pin</label>
-            <input class="form-input" type="password" maxlength="6" placeholder="••••••">
+            <label class="form-label"><span class="required">*</span> Source / Description</label>
+            <input class="form-input" type="text" id="source" placeholder="e.g. Bank transfer, deposit, refund...">
           </div>
-          <div class="form-group full-width">
-            <label class="form-label"><span class="required">*</span> Account Password</label>
-            <input class="form-input" type="password" placeholder="Enter your account password">
-          </div>
-          <div class="form-group full-width">
-            <button class="btn-primary" type="submit">
-              Update
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <div class="form-group">
+            <button class="btn-primary" type="submit" id="addBtn">
+              <span class="btn-text">Add Funds</span>
+              <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
             </button>
           </div>
         </form>
-        </div>
-      </div>
-      <div class="right-panel">
-        <div>
-          <div class="panel-section-header"><div class="panel-title">My Cards</div><button class="add-new-btn">Add New<div class="add-circle">+</div></button></div>
-          <div class="credit-card"><div class="card-shine"></div><div class="card-top"><div class="card-brand-name">Fundwise</div><div class="visa-logo">VISA</div></div><div class="card-holder">Thomas Fletcher</div><div class="card-number">1233  5432  3521  3090</div><div class="card-footer"><div class="card-footer-item"><div class="card-footer-label">Exp</div><div class="card-footer-val">09/24</div></div><div class="card-footer-item" style="text-align:right"><div class="card-footer-label">CVV</div><div class="card-footer-val">341</div></div></div></div>
-        </div>
-        <div class="conv-section"><div class="conv-title">Conversion Rate</div><div class="conv-label">Amount</div><div class="conv-input-row"><input class="conv-input" type="text" value="238" readonly><div class="currency-select">USD <span class="currency-arrow">▾</span></div></div><div class="conv-input-row"><input class="conv-input" type="text" value="222.13" readonly><div class="currency-select">EUR <span class="currency-arrow">▾</span></div></div><button class="conv-btn">Convert →<span class="conv-result" style="color:rgba(255,255,255,0.7); font-size:11px;">238 USD = 22213 EUR</span></button></div>
-        <div class="wf-section"><div class="wf-header"><div class="panel-title">Workflows</div><div class="wf-settings"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></div></div><div class="wf-item"><div class="wf-icon dark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="wf-name">Transactions</div><div class="wf-sub">Auto Block</div></div><div class="wf-arrow">›</div></div><div class="wf-item light-item"><div class="wf-icon light"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M3 12h1M20 12h1M12 3v1M12 20v1"/></svg></div><div><div class="wf-name">Create order</div><div class="wf-sub">Looks OK</div></div><div class="wf-arrow">›</div></div><div class="wf-upcoming">Upcoming <span class="wf-upcoming-arrow">→</span></div></div>
       </div>
     </div>
   </div>
@@ -487,20 +438,21 @@
   <script type="module">
     import { auth, db } from './firebase-config.js';
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+    import { doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-    // Auth guard: wait for Firebase to finish checking session
+    // Auth guard
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       unsubscribe();
       if (!user) {
         window.location.href = 'index.html';
         return;
       }
-      // Update avatar to first letter of email
+      // Update avatar
       const avatar = document.querySelector('.avatar');
       if (avatar && user.email) {
         avatar.textContent = user.email[0].toUpperCase();
       }
+      loadBalance(user.uid);
     });
 
     // Logout handler
@@ -510,40 +462,65 @@
       window.location.href = 'index.html';
     });
 
+    async function loadBalance(uid) {
+      const userRef = doc(db, "users", uid);
+      const userDoc = await getDoc(userRef);
+      let userData = userDoc.data();
+
+      if (!userData) {
+        await setDoc(userRef, { email: auth.currentUser.email, balance: 10000, pin: "", createdAt: new Date() });
+        userData = { balance: 10000 };
+      }
+
+      document.getElementById('currentBalance').textContent = '$' + (userData.balance || 0).toLocaleString();
+    }
+
     const form = document.querySelector('form');
-    const submitBtn = form.querySelector('.btn-primary');
+    const addBtn = document.getElementById('addBtn');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const user = auth.currentUser;
       if (!user) return alert("Not logged in");
 
-      const inputs = form.querySelectorAll('input[type="password"]');
-      const oldPin = inputs[0].value;
-      const newPin = inputs[1].value;
+      const amount = parseFloat(document.getElementById('amount').value) || 0;
+      const source = document.getElementById('source').value.trim();
 
-      // Show loading state
-      submitBtn.classList.add('loading');
-      submitBtn.disabled = true;
+      if (amount <= 0) return alert("Please enter a valid amount");
+      if (!source) return alert("Please enter a source or description");
+
+      addBtn.classList.add('loading');
 
       try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        const data = userDoc.data() || {};
+        const userRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userRef);
+        const userData = userDoc.data() || { balance: 0 };
 
-        if (data.pin && data.pin !== oldPin) {
-          submitBtn.classList.remove('loading');
-          submitBtn.disabled = false;
-          return alert("Old PIN is incorrect");
-        }
+        // Create a credit transaction
+        await addDoc(collection(db, "transactions"), {
+          fromUserId: user.uid,
+          fromEmail: user.email,
+          toName: "Self",
+          toBank: "Deposit",
+          amount: amount,
+          reason: source,
+          timestamp: serverTimestamp(),
+          status: "completed",
+          type: "credit"
+        });
 
-        await updateDoc(doc(db, "users", user.uid), { pin: newPin });
-        submitBtn.classList.remove('loading');
-        submitBtn.disabled = false;
-        alert("PIN updated successfully");
+        // Increase balance
+        const newBalance = (userData.balance || 0) + amount;
+        await updateDoc(userRef, { balance: newBalance });
+
+        // Update display
+        document.getElementById('currentBalance').textContent = '$' + newBalance.toLocaleString();
+
+        addBtn.classList.remove('loading');
+        alert("Funds added successfully: +$" + amount.toFixed(2));
         form.reset();
       } catch (err) {
-        submitBtn.classList.remove('loading');
-        submitBtn.disabled = false;
+        addBtn.classList.remove('loading');
         alert("Error: " + err.message);
       }
     });

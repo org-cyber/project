@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Synergy — Change Account Pin</title>
+<title>Fundwise — Support Chat</title>
 <script>
   // Synchronous theme initialization to prevent FOUC
   (function() {
@@ -120,128 +120,92 @@
     overflow: hidden;
   }
 
-  .content {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
   .content-main {
-    flex: 1; padding: 24px 28px; overflow-y: auto;
-    display: flex; flex-direction: column; gap: 20px;
-    align-items: stretch; justify-content: flex-start;
+    flex: 1; padding: 24px 28px; overflow: hidden;
+    display: flex; flex-direction: column;
   }
-  .right-panel {
-    width: 260px; min-width: 260px;
-    background: #fff; border-left: 1px solid #f0f0f0;
-    padding: 20px 16px; overflow-y: auto;
-    display: flex; flex-direction: column; gap: 20px;
+  .chat-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
   }
+  .chat-header-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #7c3aed;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 600; font-size: 14px;
+  }
+  .chat-header-info { flex: 1; }
+  .chat-header-name { font-size: 15px; font-weight: 600; color: #111; }
+  .chat-header-status { font-size: 12px; color: #22c55e; }
+  .chat-header-status.offline { color: #888; }
 
-  .card {
+  .chat-messages {
+    flex: 1; overflow-y: auto;
     background: #fff; border-radius: 12px;
-    border: 1px solid #f0f0f0; padding: 28px;
-    width: 100%; max-width: 520px;
+    border: 1px solid #f0f0f0; padding: 16px;
+    display: flex; flex-direction: column; gap: 12px;
   }
-  .card-title {
-    font-size: 15px; font-weight: 600; color: #111;
-    text-align: center; margin-bottom: 24px;
+  .message {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    word-wrap: break-word;
   }
+  .message.sent {
+    align-self: flex-end;
+    background: #7c3aed;
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+  .message.received {
+    align-self: flex-start;
+    background: #f5f5f5;
+    color: #333;
+    border-bottom-left-radius: 4px;
+  }
+  .message-time {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-top: 4px;
+  }
+  .message.sent .message-time { color: rgba(255,255,255,0.8); }
+  .message.received .message-time { color: #888; }
 
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px 20px;
+  .chat-input-area {
+    display: flex; gap: 10px;
+    margin-top: 16px;
   }
-  .form-group {
-    display: flex; flex-direction: column; gap: 6px;
-  }
-  .form-group.full-width {
-    grid-column: 1 / -1;
-  }
-  .form-label {
-    font-size: 12px; font-weight: 500; color: #555;
-    display: flex; align-items: center; gap: 3px;
-  }
-  .required { color: #ef4444; }
-  .form-input {
-    background: #f8f8f8; border: 1px solid #eee;
-    border-radius: 8px; padding: 10px 12px;
+  .chat-input {
+    flex: 1;
+    background: #fff; border: 1px solid #e0e0e0;
+    border-radius: 10px; padding: 10px 14px;
     font-size: 13.5px; color: #222; outline: none;
     font-family: inherit;
-    transition: border-color 0.15s, box-shadow 0.15s;
   }
-  .form-input:focus {
+  .chat-input:focus {
     border-color: #c4b5fd;
     box-shadow: 0 0 0 3px rgba(124,58,237,0.08);
   }
-  .form-input::placeholder { color: #bbb; }
-
-  .btn-primary {
-    background: #7c3aed; border: none; border-radius: 8px;
-    padding: 11px 0; width: 100%; font-size: 13.5px;
-    font-weight: 600; color: #fff; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    gap: 8px; margin-top: 4px;
-    transition: background 0.15s, transform 0.1s;
+  .chat-send-btn {
+    background: #7c3aed; border: none;
+    border-radius: 10px; padding: 0 20px;
+    font-size: 13px; font-weight: 600; color: #fff;
+    cursor: pointer; display: flex; align-items: center;
+    gap: 6px;
   }
-  .btn-primary:hover { background: #6d28d9; }
-  .btn-primary:active { transform: scale(0.98); }
-  .panel-section-header {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
-  }
-  .panel-title { font-size: 14px; font-weight: 600; color: #111; }
-  .add-new-btn { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #7c3aed; cursor: pointer; background: none; border: none; padding: 0; }
-  .add-circle { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #7c3aed; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #7c3aed; }
-  .credit-card { background: #1a1a1a; border-radius: 12px; padding: 16px; color: white; position: relative; overflow: hidden; }
-  .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  .card-brand-name { font-size: 13px; font-weight: 600; color: #fff; }
-  .visa-logo { font-size: 17px; font-weight: 800; font-style: italic; color: #fff; letter-spacing: -1px; }
-  .card-holder { font-size: 11px; color: #aaa; margin-bottom: 5px; }
-  .card-number { font-size: 14px; color: #fff; letter-spacing: 1.5px; font-weight: 500; margin-bottom: 14px; }
-  .card-footer { display: flex; justify-content: space-between; }
-  .card-footer-item { font-size: 10px; }
-  .card-footer-label { color: #888; margin-bottom: 2px; }
-  .card-footer-val { color: #fff; font-size: 11px; }
-  .card-shine { position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.04); }
-  .conv-section { }
-  .conv-title { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 12px; }
-  .conv-label { font-size: 11.5px; color: #888; margin-bottom: 5px; }
-  .conv-input-row { display: flex; align-items: center; background: #f8f8f8; border: 1px solid #eee; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; justify-content: space-between; }
-  .conv-input { border: none; background: none; font-size: 14px; color: #222; outline: none; width: 60px; font-weight: 500; }
-  .currency-select { display: flex; align-items: center; gap: 4px; font-size: 12.5px; color: #444; cursor: pointer; font-weight: 500; }
-  .currency-arrow { color: #999; font-size: 10px; }
-  .conv-btn { background: #7c3aed; border: none; border-radius: 8px; padding: 10px 0; width: 100%; font-size: 13px; color: #fff; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
-  .conv-result { font-size: 12px; color: #555; margin-left: 8px; }
-  .wf-section { }
-  .wf-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .wf-settings { width: 22px; height: 22px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .wf-item { background: #1a1a1a; border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; cursor: pointer; }
-  .wf-item.light-item { background: #f8f8f8; border: 1px solid #f0f0f0; }
-  .wf-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-  .wf-icon.dark { background: rgba(255,255,255,0.1); }
-  .wf-icon.light { background: #ede9fe; }
-  .wf-name { font-size: 13px; font-weight: 600; }
-  .wf-item .wf-name { color: #fff; }
-  .wf-item.light-item .wf-name { color: #222; }
-  .wf-sub { font-size: 11px; }
-  .wf-item .wf-sub { color: #ef4444; }
-  .wf-item.light-item .wf-sub { color: #22c55e; }
-  .wf-arrow { margin-left: auto; font-size: 12px; }
-  .wf-item .wf-arrow { color: #666; }
-  .wf-item.light-item .wf-arrow { color: #aaa; }
-  .wf-upcoming { font-size: 12px; color: #888; display: flex; align-items: center; gap: 4px; cursor: pointer; }
-  .wf-upcoming-arrow { font-size: 11px; }
-  .btn-primary.loading {
-    pointer-events: none;
-    opacity: 0.9;
-  }
-  .btn-primary.loading svg {
-    animation: spin 1s linear infinite;
+  .chat-send-btn:hover { background: #6d28d9; }
+  .chat-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+  .empty-chat {
+    text-align: center;
+    color: #bbb;
+    font-size: 13px;
+    padding: 40px;
   }
 
   ::-webkit-scrollbar { width: 4px; }
@@ -250,7 +214,6 @@
 
   @media (max-width: 768px) {
     .sidebar { display: none; }
-    .form-grid { grid-template-columns: 1fr; }
   }
 
 
@@ -409,14 +372,14 @@
     <ul class="sidebar-nav">
       <li><a href="dashboard.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a></li>
       <li><a href="transfer.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Payments</a></li>
-      <li><a href="add_funds.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Add Funds</a></li>
-      <li class="active"><a href="change_pin.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Change Pin</a></li>
+      <li><a href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Cards</a></li>
+      <li><a href="change_pin.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Change Pin</a></li>
       <li><a href="trans_details.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Account Statement</a></li>
       <li><a href="pass_change.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Change Password</a></li>
     </ul>
     <div class="sidebar-section-label">Support</div>
     <ul class="sidebar-nav">
-      <li><a href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a></li>
+      <li class="active"><a href="chat.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help / Chat</a></li>
       <li><a href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Feedback</a></li>
     </ul>
     <div class="sidebar-bottom">
@@ -438,7 +401,9 @@
         <input type="text" placeholder="Search anything...">
       </div>
       <div class="topbar-actions">
-       
+        <button class="btn-create">Create New</button>
+        <button class="btn-add-funds" onclick="window.location.href='add_funds.html'">Add Funds</button>
+        <button class="btn-move" onclick="window.location.href='transfer.html'">Move Money</button>
         <button class="notif-btn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <div class="notif-dot"></div>
@@ -447,39 +412,25 @@
       </div>
     </div>
 
-    <div class="content">
-      <div class="content-main">
-        <div class="card">
-        <div class="card-title">Fill Information Below to Change Account Pin</div>
-        <form class="form-grid">
-          <div class="form-group">
-            <label class="form-label"><span class="required">*</span> Old Pin</label>
-            <input class="form-input" type="password" maxlength="6" placeholder="••••••">
-          </div>
-          <div class="form-group">
-            <label class="form-label"><span class="required">*</span> New Pin</label>
-            <input class="form-input" type="password" maxlength="6" placeholder="••••••">
-          </div>
-          <div class="form-group full-width">
-            <label class="form-label"><span class="required">*</span> Account Password</label>
-            <input class="form-input" type="password" placeholder="Enter your account password">
-          </div>
-          <div class="form-group full-width">
-            <button class="btn-primary" type="submit">
-              Update
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
-          </div>
-        </form>
+    <div class="content-main">
+      <div class="chat-header">
+        <div class="chat-header-avatar">A</div>
+        <div class="chat-header-info">
+          <div class="chat-header-name">Support Admin</div>
+          <div class="chat-header-status" id="adminStatus">Online</div>
         </div>
       </div>
-      <div class="right-panel">
-        <div>
-          <div class="panel-section-header"><div class="panel-title">My Cards</div><button class="add-new-btn">Add New<div class="add-circle">+</div></button></div>
-          <div class="credit-card"><div class="card-shine"></div><div class="card-top"><div class="card-brand-name">Fundwise</div><div class="visa-logo">VISA</div></div><div class="card-holder">Thomas Fletcher</div><div class="card-number">1233  5432  3521  3090</div><div class="card-footer"><div class="card-footer-item"><div class="card-footer-label">Exp</div><div class="card-footer-val">09/24</div></div><div class="card-footer-item" style="text-align:right"><div class="card-footer-label">CVV</div><div class="card-footer-val">341</div></div></div></div>
-        </div>
-        <div class="conv-section"><div class="conv-title">Conversion Rate</div><div class="conv-label">Amount</div><div class="conv-input-row"><input class="conv-input" type="text" value="238" readonly><div class="currency-select">USD <span class="currency-arrow">▾</span></div></div><div class="conv-input-row"><input class="conv-input" type="text" value="222.13" readonly><div class="currency-select">EUR <span class="currency-arrow">▾</span></div></div><button class="conv-btn">Convert →<span class="conv-result" style="color:rgba(255,255,255,0.7); font-size:11px;">238 USD = 22213 EUR</span></button></div>
-        <div class="wf-section"><div class="wf-header"><div class="panel-title">Workflows</div><div class="wf-settings"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#777" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></div></div><div class="wf-item"><div class="wf-icon dark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="wf-name">Transactions</div><div class="wf-sub">Auto Block</div></div><div class="wf-arrow">›</div></div><div class="wf-item light-item"><div class="wf-icon light"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M3 12h1M20 12h1M12 3v1M12 20v1"/></svg></div><div><div class="wf-name">Create order</div><div class="wf-sub">Looks OK</div></div><div class="wf-arrow">›</div></div><div class="wf-upcoming">Upcoming <span class="wf-upcoming-arrow">→</span></div></div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="empty-chat">Start a conversation with support</div>
+      </div>
+
+      <div class="chat-input-area">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
+        <button class="chat-send-btn" id="sendBtn">
+          Send
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
       </div>
     </div>
   </div>
@@ -487,20 +438,26 @@
   <script type="module">
     import { auth, db } from './firebase-config.js';
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+    import { doc, getDoc, setDoc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-    // Auth guard: wait for Firebase to finish checking session
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe();
+    let currentUser = null;
+    let chatId = null;
+    let unsubscribeMessages = null;
+
+    // Auth guard
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      unsubscribeAuth();
       if (!user) {
         window.location.href = 'index.html';
         return;
       }
-      // Update avatar to first letter of email
+      currentUser = user;
+      // Update avatar
       const avatar = document.querySelector('.avatar');
       if (avatar && user.email) {
         avatar.textContent = user.email[0].toUpperCase();
       }
+      initChat(user.uid, user.email);
     });
 
     // Logout handler
@@ -510,44 +467,124 @@
       window.location.href = 'index.html';
     });
 
-    const form = document.querySelector('form');
-    const submitBtn = form.querySelector('.btn-primary');
+    async function initChat(uid, email) {
+  chatId = uid;
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const user = auth.currentUser;
-      if (!user) return alert("Not logged in");
+  try {
+    // Create chat document if it doesn't exist
+    const chatRef = doc(db, "chats", chatId);
+    const chatDoc = await getDoc(chatRef);
 
-      const inputs = form.querySelectorAll('input[type="password"]');
-      const oldPin = inputs[0].value;
-      const newPin = inputs[1].value;
+    if (!chatDoc.exists()) {
+      await setDoc(chatRef, {
+        userId: uid,
+        userEmail: email,
+        lastMessage: "",
+        lastTimestamp: serverTimestamp(),
+        unreadByAdmin: 0,
+        unreadByUser: 0,
+        createdAt: serverTimestamp()
+      });
+    }
 
-      // Show loading state
-      submitBtn.classList.add('loading');
-      submitBtn.disabled = true;
+    // Listen for messages
+    const messagesQuery = query(
+      collection(db, "chats", chatId, "messages"),
+      orderBy("timestamp", "asc")
+    );
+
+    if (unsubscribeMessages) unsubscribeMessages();
+    unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+      const container = document.getElementById('chatMessages');
+
+      if (snapshot.empty) {
+        container.innerHTML = '<div class="empty-chat">Start a conversation with support</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      snapshot.forEach((docSnap) => {
+        const msg = docSnap.data();
+        renderMessage(msg);
+      });
+      scrollToBottom();
+    }, (err) => {
+      console.error('Messages listener error:', err);
+    });
+
+  } catch (err) {
+    console.error('initChat error:', err);
+    alert('Error initializing chat: ' + err.message);
+  }
+}
+
+    function renderMessage(msg) {
+      const container = document.getElementById('chatMessages');
+      const isUser = msg.senderType === 'user';
+      const div = document.createElement('div');
+      div.className = `message ${isUser ? 'sent' : 'received'}`;
+
+      const time = msg.timestamp 
+        ? msg.timestamp.toDate().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'})
+        : 'now';
+
+      div.innerHTML = `
+        ${escapeHtml(msg.text)}
+        <div class="message-time">${time}</div>
+      `;
+      container.appendChild(div);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function scrollToBottom() {
+      const container = document.getElementById('chatMessages');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text || !chatId) return;
+
+      const sendBtn = document.getElementById('sendBtn');
+      sendBtn.disabled = true;
 
       try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        const data = userDoc.data() || {};
+        // Add message to subcollection
+        await addDoc(collection(db, "chats", chatId, "messages"), {
+          senderId: currentUser.uid,
+          senderType: 'user',
+          text: text,
+          timestamp: serverTimestamp()
+        });
 
-        if (data.pin && data.pin !== oldPin) {
-          submitBtn.classList.remove('loading');
-          submitBtn.disabled = false;
-          return alert("Old PIN is incorrect");
-        }
+        // Update chat document
+        await updateDoc(doc(db, "chats", chatId), {
+          lastMessage: text,
+          lastTimestamp: serverTimestamp(),
+          unreadByAdmin: 1 // admin sees this as unread
+        });
 
-        await updateDoc(doc(db, "users", user.uid), { pin: newPin });
-        submitBtn.classList.remove('loading');
-        submitBtn.disabled = false;
-        alert("PIN updated successfully");
-        form.reset();
+        input.value = '';
+        sendBtn.disabled = false;
       } catch (err) {
-        submitBtn.classList.remove('loading');
-        submitBtn.disabled = false;
-        alert("Error: " + err.message);
+        console.error(err);
+        sendBtn.disabled = false;
+        alert("Failed to send message");
       }
+    }
+
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    document.getElementById('chatInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
     });
-      // --- Theme Toggle Logic ---
+    localStorage.removeItem('demo_new_message');
+       // --- Theme Toggle Logic ---
   const themeBtns = document.querySelectorAll('.theme-btn');
   
   function applyTheme(theme) {
@@ -573,6 +610,7 @@
       applyTheme(isLightBtn ? 'light' : 'dark');
     });
   });
+    
   </script>
 </body>
 </html>

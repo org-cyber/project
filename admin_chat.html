@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synergy — Admin Support Chat</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #fafafa;
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+    color: #333;
+  }
+
+  /* ===== NAVIGATION SIDEBAR (Fixed Left) ===== */
+  .nav-sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: #0a0a0f;
+    border-right: 1px solid #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+    position: fixed;
+    height: 100vh;
+    z-index: 100;
+    left: 0;
+    top: 0;
+  }
+
+  .nav-sidebar .sidebar-header {
+    padding: 0 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-icon {
+    width: 28px;
+    height: 28px;
+    background: #ffffff;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-icon svg { width: 16px; height: 16px; color: #0a0a0f; }
+
+  .logo-text {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    color: #ffffff;
+  }
+
+  .nav-section {
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+
+  .nav-menu { display: flex; flex-direction: column; gap: 2px; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border-radius: 6px;
+    color: #a0a0a0;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.05); color: #ffffff; }
+  .nav-item.active { background: rgba(255,255,255,0.08); color: #ffffff; font-weight: 600; }
+  .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; stroke-width: 2; }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border-radius: 6px;
+    color: #a0a0a0;
+    font-size: 13px;
+    font-weight: 500;
+    border: none;
+    background: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: all 0.15s ease;
+  }
+
+  .logout-btn:hover { background: rgba(220,38,38,0.1); color: #ef4444; }
+  .logout-btn svg { width: 18px; height: 18px; }
+
+  /* ===== CHAT SIDEBAR (In Flex Flow) ===== */
+  .chat-sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: #fff;
+    border-right: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin-left: 280px;
+  }
+
+  .chat-sidebar .sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .chat-sidebar .sidebar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+  }
+
+  .chat-sidebar .sidebar-subtitle {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  .chat-list {
+    flex: 1;
+    overflow-y: auto;
+    list-style: none;
+  }
+
+  .chat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #f8f8f8;
+    transition: background 0.15s;
+  }
+
+  .chat-item:hover { background: #f7f7f7; }
+  .chat-item.active { background: #f4f0ff; }
+
+  .chat-item-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .chat-item-info { flex: 1; min-width: 0; }
+
+  .chat-item-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #222;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .chat-item-preview {
+    font-size: 12px;
+    color: #888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+
+  .chat-item-time {
+    font-size: 11px;
+    color: #aaa;
+  }
+
+  .unread-badge {
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #fafafa;
+    height: 100vh;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .topbar-title { font-size: 15px; font-weight: 600; color: #111; }
+  .topbar-subtitle { font-size: 12px; color: #888; }
+
+  .content-main {
+    flex: 1;
+    padding: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .message {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    word-wrap: break-word;
+  }
+
+  .message.sent {
+    align-self: flex-end;
+    background: #7c3aed;
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+
+  .message.received {
+    align-self: flex-start;
+    background: #f5f5f5;
+    color: #333;
+    border-bottom-left-radius: 4px;
+  }
+
+  .message-time {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-top: 4px;
+  }
+
+  .message.sent .message-time { color: rgba(255,255,255,0.8); }
+  .message.received .message-time { color: #888; }
+
+  .chat-input-area {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: #222;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .chat-input:focus {
+    border-color: #c4b5fd;
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.08);
+  }
+
+  .chat-send-btn {
+    background: #7c3aed;
+    border: none;
+    border-radius: 10px;
+    padding: 0 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .chat-send-btn:hover { background: #6d28d9; }
+  .chat-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: #bbb;
+    font-size: 13px;
+    padding: 60px 20px;
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 2px; }
+</style>
+</head>
+<body>
+<aside class="nav-sidebar">
+  <div class="sidebar-header">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div class="logo-text">Synergy</div>
+  </div>
+  <div class="nav-section">
+    <nav class="nav-menu">
+      <a href="dashboard_admin.html" class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        Dashboard
+      </a>
+      <a href="index.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        Register User | Account
+      </a>
+      <a href="acct_statement.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+          <line x1="1" y1="10" x2="23" y2="10"/>
+        </svg>
+        Add acct Statement
+      </a>
+      <a href="trans_details.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+          <line x1="1" y1="10" x2="23" y2="10"/>
+        </svg>
+        Transaction Details
+      </a>
+      <a href="accounts.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        View all Accounts
+      </a>
+      <a href="account_status.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        Update account status
+      </a>
+      <a href="account_balance.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        Update account balance
+      </a>
+      <a href="admin_chat.html" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Chat / Support ...
+      </a>
+    </nav>
+  </div>
+  <div class="sidebar-footer">
+    <button class="logout-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      Logout
+    </button>
+  </div>
+</aside>
+
+<div class="chat-sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">Support Chats</div>
+    <div class="sidebar-subtitle">Select a user to chat</div>
+  </div>
+  <ul class="chat-list" id="chatList">
+    <li class="empty-state">Loading chats...</li>
+  </ul>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="chatTitle">Select a conversation</div>
+      <div class="topbar-subtitle" id="chatSubtitle">—</div>
+    </div>
+  </div>
+
+  <div class="content-main">
+    <div class="chat-messages" id="chatMessages">
+      <div class="empty-state">Select a user from the sidebar to start chatting</div>
+    </div>
+
+    <div class="chat-input-area" id="inputArea" style="display:none;">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Type your reply...">
+      <button class="chat-send-btn" id="sendBtn">Send</button>
+    </div>
+  </div>
+</div>
+
+  <script type="module">
+    import { auth, db } from './firebase-config.js';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+    import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+    let currentChatId = null;
+    let unsubscribeMessages = null;
+    let currentUser = null;
+
+    // Simple admin check - in production use Firebase custom claims
+   // Simple admin check - compare with hardcoded admin email
+const ADMIN_EMAIL = 'admin@synergy.com'; 
+
+const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+  unsubscribeAuth();
+  if (!user) {
+    window.location.href = 'index.html';
+    return;
+  }
+  currentUser = user;
+  
+  if (user.email !== ADMIN_EMAIL) {
+    alert('Admin access only. Your email: ' + user.email);
+    window.location.href = 'dashboard.html';
+    return;
+  }
+  
+  loadChatList();
+});
+
+    function loadChatList() {
+      const chatList = document.getElementById('chatList');
+      const q = query(collection(db, "chats"), orderBy("lastTimestamp", "desc"));
+
+      onSnapshot(q, (snapshot) => {
+        chatList.innerHTML = '';
+
+        if (snapshot.empty) {
+          chatList.innerHTML = '<li class="empty-state">No active chats</li>';
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const chat = docSnap.data();
+          const li = document.createElement('li');
+          li.className = 'chat-item' + (docSnap.id === currentChatId ? ' active' : '');
+          li.dataset.chatId = docSnap.id;
+
+          const initial = chat.userEmail ? chat.userEmail[0].toUpperCase() : '?';
+          const time = chat.lastTimestamp 
+            ? chat.lastTimestamp.toDate().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'})
+            : '';
+
+          li.innerHTML = `
+            <div class="chat-item-avatar">${initial}</div>
+            <div class="chat-item-info">
+              <div class="chat-item-name">
+                ${escapeHtml(chat.userEmail || 'Unknown')}
+                ${chat.unreadByAdmin > 0 ? `<span class="unread-badge">${chat.unreadByAdmin}</span>` : ''}
+              </div>
+              <div class="chat-item-preview">${escapeHtml(chat.lastMessage || 'No messages yet')}</div>
+            </div>
+            <div class="chat-item-time">${time}</div>
+          `;
+
+          li.addEventListener('click', () => selectChat(docSnap.id, chat));
+          chatList.appendChild(li);
+        });
+      });
+    }
+
+    function selectChat(chatId, chatData) {
+      currentChatId = chatId;
+
+      // Update active state in sidebar
+      document.querySelectorAll('.chat-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.chatId === chatId);
+      });
+
+      // Update header
+      document.getElementById('chatTitle').textContent = chatData.userEmail || 'Unknown User';
+      document.getElementById('chatSubtitle').textContent = 'User ID: ' + chatId.slice(0, 8);
+      document.getElementById('inputArea').style.display = 'flex';
+
+      // Mark as read by admin
+      updateDoc(doc(db, "chats", chatId), { unreadByAdmin: 0 });
+
+      // Listen for messages
+      const messagesQuery = query(
+        collection(db, "chats", chatId, "messages"),
+        orderBy("timestamp", "asc")
+      );
+
+      if (unsubscribeMessages) unsubscribeMessages();
+      unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+        const container = document.getElementById('chatMessages');
+        container.innerHTML = '';
+
+        if (snapshot.empty) {
+          container.innerHTML = '<div class="empty-state">No messages yet</div>';
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const msg = docSnap.data();
+          renderMessage(msg);
+        });
+        scrollToBottom();
+      });
+    }
+
+    function renderMessage(msg) {
+      const container = document.getElementById('chatMessages');
+      const isAdmin = msg.senderType === 'admin';
+      const div = document.createElement('div');
+      div.className = `message ${isAdmin ? 'sent' : 'received'}`;
+
+      const time = msg.timestamp 
+        ? msg.timestamp.toDate().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'})
+        : 'now';
+
+      div.innerHTML = `
+        ${escapeHtml(msg.text)}
+        <div class="message-time">${time}</div>
+      `;
+      container.appendChild(div);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function scrollToBottom() {
+      const container = document.getElementById('chatMessages');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function sendReply() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text || !currentChatId) return;
+
+      const sendBtn = document.getElementById('sendBtn');
+      sendBtn.disabled = true;
+
+      try {
+        await addDoc(collection(db, "chats", currentChatId, "messages"), {
+          senderId: currentUser.uid,
+          senderType: 'admin',
+          text: text,
+          timestamp: serverTimestamp()
+        });
+
+        await updateDoc(doc(db, "chats", currentChatId), {
+          lastMessage: text,
+          lastTimestamp: serverTimestamp(),
+          unreadByUser: 1
+        });
+
+        input.value = '';
+        sendBtn.disabled = false;
+      } catch (err) {
+        console.error(err);
+        sendBtn.disabled = false;
+        alert("Failed to send");
+      }
+    }
+
+    document.getElementById('sendBtn').addEventListener('click', sendReply);
+    document.getElementById('chatInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendReply();
+    });
+  </script>
+</body>
+</html>
