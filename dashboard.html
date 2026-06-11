@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <script>
-  // Synchronous theme initialization to prevent FOUC
   (function() {
     const savedTheme = localStorage.getItem('synergy-theme');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -25,10 +24,9 @@
     overflow: hidden;
   }
 
-  /* Sidebar */
+  /* ===== SIDEBAR ===== */
   .sidebar {
     width: 200px;
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
     min-width: 200px;
     background: #fff;
     border-right: 1px solid #f0f0f0;
@@ -36,6 +34,22 @@
     flex-direction: column;
     padding: 20px 0;
     height: 100vh;
+    position: relative;
+    z-index: 100;
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 99;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .sidebar-overlay.active {
+    display: block;
+    opacity: 1;
   }
   .logo {
     font-size: 20px;
@@ -117,7 +131,40 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   }
 
-  /* Main content */
+  /* ===== HAMBURGER ===== */
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .hamburger:hover { background: #f5f5f5; }
+  .hamburger svg { width: 20px; height: 20px; stroke: #555; }
+
+  /* ===== RIGHT PANEL TOGGLE ===== */
+  .right-panel-toggle {
+    display: none;
+    background: none;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #444;
+    font-weight: 500;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  /* ===== MAIN ===== */
   .main {
     flex: 1;
     display: flex;
@@ -133,9 +180,11 @@
     padding: 14px 20px;
     background: #fff;
     border-bottom: 1px solid #f0f0f0;
+    flex-wrap: wrap;
   }
   .search-bar {
     flex: 1;
+    min-width: 140px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -190,6 +239,7 @@
     position: absolute; top: 5px; right: 6px;
     width: 7px; height: 7px; background: #ef4444; border-radius: 50%;
     border: 1.5px solid #fff;
+    display: none;
   }
   .avatar {
     width: 32px; height: 32px; border-radius: 50%;
@@ -197,10 +247,11 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 13px; font-weight: 600; color: white; cursor: pointer;
     overflow: hidden;
+    flex-shrink: 0;
   }
   .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-  /* Content area */
+  /* ===== CONTENT ===== */
   .content {
     display: flex;
     flex: 1;
@@ -213,9 +264,10 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    min-width: 0;
   }
 
-  /* Balance + quick tx row */
+  /* ===== TOP ROW ===== */
   .top-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -259,6 +311,7 @@
     border-radius: 12px;
     border: 1px solid #f0f0f0;
     padding: 18px 22px 16px;
+    overflow: hidden;
   }
   .quick-tx-title {
     font-size: 13px;
@@ -270,14 +323,19 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    overflow: hidden;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  .quick-tx-people::-webkit-scrollbar { display: none; }
   .tx-person {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 5px;
     cursor: pointer;
+    flex-shrink: 0;
   }
   .tx-avatar-wrap {
     width: 46px; height: 46px;
@@ -296,10 +354,12 @@
     font-size: 11px;
     font-weight: 600;
     color: #333;
+    white-space: nowrap;
   }
   .tx-person-id {
     font-size: 10px;
     color: #aaa;
+    white-space: nowrap;
   }
   .tx-arrow {
     margin-left: auto;
@@ -309,9 +369,10 @@
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
     font-size: 12px; color: #888;
+    flex-shrink: 0;
   }
 
-  /* Charts row */
+  /* ===== CHARTS ROW ===== */
   .charts-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -328,8 +389,9 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 4px;
+    gap: 8px;
   }
-  .chart-title { font-size: 12.5px; color: #888; }
+  .chart-title { font-size: 12.5px; color: #888; white-space: nowrap; }
   .chart-period {
     font-size: 11.5px;
     color: #555;
@@ -341,6 +403,8 @@
     gap: 4px;
     cursor: pointer;
     border: none;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .chart-amount {
     font-size: 22px;
@@ -350,6 +414,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    flex-wrap: wrap;
   }
   .chart-trend {
     font-size: 11px;
@@ -367,9 +432,11 @@
     font-size: 9.5px;
     color: #bbb;
     margin-top: 2px;
+    overflow: hidden;
   }
+  .chart-labels span { flex: 1; text-align: center; }
 
-  /* Bar chart */
+  /* ===== BAR CHART ===== */
   .bar-chart {
     display: flex;
     align-items: flex-end;
@@ -383,6 +450,7 @@
     border-radius: 3px 3px 0 0;
     position: relative;
     transition: opacity 0.2s;
+    min-width: 0;
   }
   .bar.green { background: #86efac; }
   .bar.green.highlight { background: #22c55e; }
@@ -409,25 +477,28 @@
     border: 1.5px solid white;
   }
 
-  /* Transactions table */
+  /* ===== TRANSACTIONS ===== */
   .tx-section {
     background: #fff;
     border-radius: 12px;
     border: 1px solid #f0f0f0;
     padding: 16px 18px;
+    overflow: hidden;
   }
   .tx-section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
   }
   .tx-section-title {
     font-size: 14px;
     font-weight: 600;
     color: #111;
   }
-  .tx-controls { display: flex; align-items: center; gap: 8px; }
+  .tx-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .tx-search {
     display: flex;
     align-items: center;
@@ -453,6 +524,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    white-space: nowrap;
   }
   .filter-btn {
     background: #f5f5f5;
@@ -465,9 +537,16 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    white-space: nowrap;
   }
 
-  .tx-table { width: 100%; border-collapse: collapse; }
+  .tx-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -18px;
+    padding: 0 18px;
+  }
+  .tx-table { width: 100%; border-collapse: collapse; min-width: 580px; }
   .tx-table th {
     text-align: left;
     font-size: 12px;
@@ -475,6 +554,7 @@
     font-weight: 500;
     padding: 0 8px 10px;
     border-bottom: 1px solid #f0f0f0;
+    white-space: nowrap;
   }
   .tx-table th:first-child { width: 28px; padding-left: 0; }
   .tx-table td {
@@ -482,6 +562,7 @@
     border-bottom: 1px solid #f8f8f8;
     font-size: 12.5px;
     color: #333;
+    white-space: nowrap;
   }
   .tx-table td:first-child { padding-left: 0; }
   .tx-table tr:last-child td { border-bottom: none; }
@@ -501,9 +582,7 @@
     font-size: 12px;
     color: #777;
   }
-  .doc-icon {
-    width: 14px; height: 14px; opacity: 0.5;
-  }
+  .doc-icon { width: 14px; height: 14px; opacity: 0.5; flex-shrink: 0; }
   .tx-name-cell {
     display: flex;
     align-items: center;
@@ -528,61 +607,25 @@
     border-radius: 20px;
     font-size: 11.5px;
     font-weight: 500;
+    white-space: nowrap;
   }
-  .badge-completed {
-    background: #f0fdf4;
-    color: #16a34a;
-  }
-  .badge-progress {
-    background: #fefce8;
-    color: #b45309;
-  }
-  .badge-dot {
-    width: 6px; height: 6px; border-radius: 50;
-  }
+  .badge-completed { background: #f0fdf4; color: #16a34a; }
+  .badge-progress { background: #fefce8; color: #b45309; }
 
   .notification-icon {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: inherit; /* Inherits text color from parent */
-  text-decoration: none;
-  padding: 8px;
-  border-radius: 50%;
-  transition: background-color 0.2s ease;
-}
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    text-decoration: none;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+  }
+  .notification-icon:hover { background-color: rgba(0,0,0,0.05); }
 
-.notification-icon:hover {
-  background-color: rgba(0, 0, 0, 0.05); /* Adjust for dark mode as needed */
-}
-
-
-.notif-btn {
-  position: relative; 
-  background: none; 
-  border: none; 
-  cursor: pointer;
-  width: 34px; 
-  height: 34px; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  text-decoration: none; /* Removes underline from the link */
-}
-.notif-dot {
-  position: absolute; 
-  top: 5px; 
-  right: 6px;
-  width: 7px; 
-  height: 7px; 
-  background: #ef4444; 
-  border-radius: 50%;
-  border: 1.5px solid #fff;
-  display: none; /* Hidden by default */
-}
-
-  /* Right panel */
+  /* ===== RIGHT PANEL ===== */
   .right-panel {
     width: 240px;
     min-width: 240px;
@@ -602,11 +645,7 @@
     justify-content: space-between;
     margin-bottom: 12px;
   }
-  .panel-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #111;
-  }
+  .panel-title { font-size: 14px; font-weight: 600; color: #111; }
   .add-new-btn {
     display: flex;
     align-items: center;
@@ -640,34 +679,11 @@
     align-items: center;
     margin-bottom: 20px;
   }
-  .card-brand-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: #fff;
-  }
-  .visa-logo {
-    font-size: 17px;
-    font-weight: 800;
-    font-style: italic;
-    color: #fff;
-    letter-spacing: -1px;
-  }
-  .card-holder {
-    font-size: 11px;
-    color: #aaa;
-    margin-bottom: 5px;
-  }
-  .card-number {
-    font-size: 14px;
-    color: #fff;
-    letter-spacing: 1.5px;
-    font-weight: 500;
-    margin-bottom: 14px;
-  }
-  .card-footer {
-    display: flex;
-    justify-content: space-between;
-  }
+  .card-brand-name { font-size: 13px; font-weight: 600; color: #fff; }
+  .visa-logo { font-size: 17px; font-weight: 800; font-style: italic; color: #fff; letter-spacing: -1px; }
+  .card-holder { font-size: 11px; color: #aaa; margin-bottom: 5px; }
+  .card-number { font-size: 14px; color: #fff; letter-spacing: 1.5px; font-weight: 500; margin-bottom: 14px; }
+  .card-footer { display: flex; justify-content: space-between; }
   .card-footer-item { font-size: 10px; }
   .card-footer-label { color: #888; margin-bottom: 2px; }
   .card-footer-val { color: #fff; font-size: 11px; }
@@ -679,7 +695,7 @@
     background: rgba(255,255,255,0.04);
   }
 
-  /* Conversion Rate */
+  /* Conversion */
   .conv-section { }
   .conv-title { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 12px; }
   .conv-label { font-size: 11.5px; color: #888; margin-bottom: 5px; }
@@ -707,7 +723,6 @@
     cursor: pointer;
     font-weight: 500;
   }
-  .currency-arrow { color: #999; font-size: 10px; }
   .conv-btn {
     background: #7c3aed;
     border: none;
@@ -724,11 +739,7 @@
     gap: 8px;
     margin-top: 4px;
   }
-  .conv-result {
-    font-size: 12px;
-    color: #555;
-    margin-left: 8px;
-  }
+  .conv-result { font-size: 12px; color: #555; margin-left: 8px; }
 
   /* Workflows */
   .wf-section { }
@@ -794,151 +805,257 @@
   .av-gray { background: linear-gradient(135deg, #d1d5db, #9ca3af); }
   .av-teal { background: linear-gradient(135deg, #5eead4, #14b8a6); }
 
-  /* SVG icons inline */
   svg { display: inline-block; }
 
-  /* Loading Skeleton Animation */
+  /* Loading */
   @keyframes shimmer {
     0% { background-position: -1000px 0; }
     100% { background-position: 1000px 0; }
   }
-  
   @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
-
-  .skeleton-loader {
-    background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
-    background-size: 1000px 100%;
-    animation: shimmer 2s infinite;
-    border-radius: 8px;
-  }
-
   .loader-spinner {
     display: inline-block;
-    width: 20px;
-    height: 20px;
+    width: 20px; height: 20px;
     border: 3px solid #f0f0f0;
     border-top-color: #7c3aed;
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
-
-  .loading-card {
-    background: #fff;
-    border-radius: 12px;
-    border: 1px solid #f0f0f0;
-    padding: 18px 22px 16px;
-    min-height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-  }
-
-  .loading-text {
-    color: #888;
-    font-size: 13px;
-    font-weight: 500;
-  }
-
+  .loading-text { color: #888; font-size: 13px; font-weight: 500; }
   .hidden { display: none !important; }
 
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 2px; }
-  /* =========================================
-     DARK THEME OVERRIDES (REFINED)
-     ========================================= */
-  
-  /* 1. Main Backgrounds (Softer dark gray, not pitch black) */
+
+  /* ============================================================
+     DARK THEME OVERRIDES
+     ============================================================ */
   [data-theme="dark"] body,
   [data-theme="dark"] .main,
-  [data-theme="dark"] .content { 
-    background: #121214; /* A softer dark gray instead of pure black */
-    color: #f4f4f5; 
-  }
-  
-  /* 2. Cards & Surfaces (Slightly lighter than the background for depth) */
-  [data-theme="dark"] .sidebar, 
-  [data-theme="dark"] .topbar, 
-  [data-theme="dark"] .balance-card, 
-  [data-theme="dark"] .quick-tx-card, 
-  [data-theme="dark"] .chart-card, 
-  [data-theme="dark"] .tx-section, 
+  [data-theme="dark"] .content { background: #121214; color: #f4f4f5; }
+  [data-theme="dark"] .sidebar,
+  [data-theme="dark"] .topbar,
+  [data-theme="dark"] .balance-card,
+  [data-theme="dark"] .quick-tx-card,
+  [data-theme="dark"] .chart-card,
+  [data-theme="dark"] .tx-section,
   [data-theme="dark"] .right-panel,
-  [data-theme="dark"] .credit-card { 
-    background: #1c1c1f; /* Subtle contrast against the #121214 background */
-    border-color: #27272a; 
-  }
-  
-  /* Typography */
-  [data-theme="dark"] .logo, 
-  [data-theme="dark"] .panel-title, 
-  [data-theme="dark"] .conv-title, 
-  [data-theme="dark"] .chart-amount, 
-  [data-theme="dark"] .balance-amount, 
+  [data-theme="dark"] .credit-card { background: #1c1c1f; border-color: #27272a; }
+  [data-theme="dark"] .logo,
+  [data-theme="dark"] .panel-title,
+  [data-theme="dark"] .conv-title,
+  [data-theme="dark"] .chart-amount,
+  [data-theme="dark"] .balance-amount,
   [data-theme="dark"] .tx-name,
   [data-theme="dark"] .wf-item .wf-name { color: #f4f4f5; }
-  
-  [data-theme="dark"] .sidebar-nav li a, 
-  [data-theme="dark"] .tx-sub, 
-  [data-theme="dark"] .balance-label, 
-  [data-theme="dark"] .chart-title, 
+  [data-theme="dark"] .sidebar-nav li a,
+  [data-theme="dark"] .tx-sub,
+  [data-theme="dark"] .balance-label,
+  [data-theme="dark"] .chart-title,
   [data-theme="dark"] .conv-label { color: #a1a1aa; }
-  
-  /* Inputs & Controls */
-  [data-theme="dark"] .search-bar, 
-  [data-theme="dark"] .tx-search, 
-  [data-theme="dark"] .conv-input-row, 
-  [data-theme="dark"] .chart-period, 
-  [data-theme="dark"] .period-btn, 
-  [data-theme="dark"] .filter-btn, 
-  [data-theme="dark"] .theme-toggle { 
-    background: #27272a; border-color: #3f3f46; color: #a1a1aa; 
-  }
+  [data-theme="dark"] .search-bar,
+  [data-theme="dark"] .tx-search,
+  [data-theme="dark"] .conv-input-row,
+  [data-theme="dark"] .chart-period,
+  [data-theme="dark"] .period-btn,
+  [data-theme="dark"] .filter-btn,
+  [data-theme="dark"] .theme-toggle { background: #27272a; border-color: #3f3f46; color: #a1a1aa; }
   [data-theme="dark"] .search-bar input,
   [data-theme="dark"] .tx-search input,
   [data-theme="dark"] .conv-input { color: #f4f4f5; }
   [data-theme="dark"] .search-bar input::placeholder,
   [data-theme="dark"] .tx-search input::placeholder { color: #71717a; }
-
-  /* Interactive States */
   [data-theme="dark"] .sidebar-nav li.active a { background: #2e1065; color: #c4b5fd; }
   [data-theme="dark"] .sidebar-nav li a:hover { background: #27272a; }
-  
-  [data-theme="dark"] .btn-create, 
-  [data-theme="dark"] .btn-add-funds, 
-  [data-theme="dark"] .bal-btn { border-color: #3f3f46; color: #d4d4d8; }
-  [data-theme="dark"] .bal-btn:hover, [data-theme="dark"] .btn-create:hover { background: #27272a; }
-
+  [data-theme="dark"] .btn-create,
+  [data-theme="dark"] .btn-add-funds,
+  [data-theme="dark"] .bal-btn,
+  [data-theme="dark"] .right-panel-toggle { border-color: #3f3f46; color: #d4d4d8; }
+  [data-theme="dark"] .bal-btn:hover,
+  [data-theme="dark"] .btn-create:hover { background: #27272a; }
   [data-theme="dark"] .theme-btn.active { background: #3f3f46; color: #f4f4f5; box-shadow: none; }
-  
-  /* Tables, Charts & Badges */
   [data-theme="dark"] .tx-table th { color: #71717a; border-bottom-color: #27272a; }
   [data-theme="dark"] .tx-table td { border-bottom-color: #27272a; color: #d4d4d8; }
   [data-theme="dark"] .badge-completed { background: #064e3b; color: #6ee7b7; }
   [data-theme="dark"] .badge-progress { background: #713f12; color: #fcd34d; }
-  [data-theme="dark"] .bar-tooltip { color: #f4f4f5; } /* Fix tooltip text visibility on dark bars */
-  
-  /* Workflows & Misc */
+  [data-theme="dark"] .bar-tooltip { color: #f4f4f5; }
   [data-theme="dark"] .wf-item.light-item { background: #27272a; border-color: #3f3f46; }
   [data-theme="dark"] .wf-item.light-item .wf-name { color: #f4f4f5; }
   [data-theme="dark"] .wf-item.light-item .wf-sub { color: #4ade80; }
   [data-theme="dark"] .wf-icon.light { background: #2e1065; }
   [data-theme="dark"] .checkbox { border-color: #52525b; }
-  
-  /* Force override inline background colors on transaction logos */
-  [data-theme="dark"] .tx-logo { background: #27272a !important; } 
-</style>
+  [data-theme="dark"] .tx-logo { background: #27272a !important; }
+  [data-theme="dark"] .hamburger:hover { background: #27272a; }
+  [data-theme="dark"] .hamburger svg { stroke: #a1a1aa; }
+  [data-theme="dark"] .sidebar-overlay { background: rgba(0,0,0,0.6); }
 
+  /* ============================================================
+     MOBILE RESPONSIVE — TABLET (≤ 1024px)
+     ============================================================ */
+  @media (max-width: 1024px) {
+    .right-panel {
+      position: fixed;
+      top: 0; right: 0;
+      height: 100vh;
+      z-index: 110;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+    }
+    .right-panel.open {
+      transform: translateX(0);
+    }
+    .right-panel-toggle {
+      display: flex;
+    }
+    .right-panel-close {
+      display: flex !important;
+    }
+  }
+
+  /* ============================================================
+     MOBILE RESPONSIVE — PHONE (≤ 768px)
+     ============================================================ */
+  @media (max-width: 768px) {
+    body { overflow: hidden; }
+
+    /* Sidebar → off-canvas drawer */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      z-index: 100;
+      transform: translateX(-100%);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+    }
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    /* Show hamburger */
+    .hamburger { display: flex; }
+
+    /* Topbar */
+    .topbar {
+      padding: 10px 14px;
+      gap: 8px;
+    }
+    .search-bar { padding: 6px 10px; }
+    .search-bar input { font-size: 13px; }
+
+    /* Hide desktop-only topbar buttons on small phones */
+    .btn-create,
+    .btn-add-funds,
+    .btn-move {
+      display: none;
+    }
+
+    /* Content */
+    .content {
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .content-main {
+      padding: 14px;
+      gap: 12px;
+      overflow-y: visible;
+    }
+
+    /* Single-column grids */
+    .top-row {
+      grid-template-columns: 1fr;
+    }
+    .charts-row {
+      grid-template-columns: 1fr;
+    }
+
+    /* Balance card */
+    .balance-card { padding: 14px 16px 12px; }
+    .balance-amount {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    /* Quick TX */
+    .quick-tx-card { padding: 14px 16px 12px; }
+    .quick-tx-people { gap: 10px; }
+    .tx-avatar-wrap { width: 40px; height: 40px; font-size: 12px; }
+    .tx-avatar-wrap.transfer-btn { font-size: 18px; }
+    .tx-arrow { display: none; }
+
+    /* Charts */
+    .chart-card { padding: 14px 14px 10px; }
+    .chart-amount { font-size: 18px; }
+    .chart-area { height: 70px; }
+    .bar-chart { height: 65px; }
+    .bar-tooltip { display: none; }
+    .bar-dot { display: none; }
+    .chart-labels { font-size: 8px; }
+    .chart-labels span:nth-child(even) { display: none; }
+
+    /* Transactions */
+    .tx-section { padding: 14px; }
+    .tx-section-header { flex-direction: column; align-items: flex-start; }
+    .tx-controls { width: 100%; overflow-x: auto; padding-bottom: 4px; }
+    .tx-table-wrap { margin: 0 -14px; padding: 0 14px; }
+
+    /* Right panel */
+    .right-panel { width: 280px; min-width: 280px; }
+  }
+
+  /* ============================================================
+     MOBILE RESPONSIVE — SMALL PHONE (≤ 480px)
+     ============================================================ */
+  @media (max-width: 480px) {
+    .topbar { padding: 8px 10px; gap: 6px; }
+    .search-bar { padding: 5px 8px; font-size: 12px; }
+    .search-bar input { font-size: 12px; }
+    .notif-btn { width: 30px; height: 30px; }
+    .avatar { width: 28px; height: 28px; font-size: 11px; }
+    .content-main { padding: 10px; gap: 10px; }
+    .balance-amount { font-size: 24px; }
+    .balance-label { font-size: 11px; }
+    .chart-amount { font-size: 16px; }
+    .chart-title { font-size: 11px; }
+    .chart-period { font-size: 10px; padding: 2px 7px; }
+    .tx-section { padding: 10px 12px; }
+    .tx-section-title { font-size: 13px; }
+    .tx-search input { width: 80px; }
+    .right-panel { width: 100%; min-width: 100%; border-left: none; }
+    .right-panel-toggle { padding: 6px 10px; font-size: 12px; }
+  }
+
+  /* Right panel close button (hidden by default, shown on tablet+) */
+  .right-panel-close {
+    display: none;
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    transition: background 0.15s;
+  }
+  .right-panel-close:hover { background: #e0e0e0; }
+  [data-theme="dark"] .right-panel-close { background: #3f3f46; }
+  [data-theme="dark"] .right-panel-close:hover { background: #52525b; }
+</style>
 </head>
 <body>
 
+  <!-- Sidebar overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
   <!-- Sidebar -->
-  <div class="sidebar">
+  <div class="sidebar" id="sidebar">
     <div class="logo">
       <div class="logo-icon">
         <svg viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
@@ -948,85 +1065,32 @@
 
     <div class="sidebar-section-label">General</div>
     <ul class="sidebar-nav">
-      <li class="active">
-        <a href="dashboard.html">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-          Dashboard
-        </a>
-      </li>
-      <li>
-        <a href="transfer.html">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Payments
-        </a>
-      </li>
-      <li>
-        <a href="add_funds.html">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-          Add Funds
-        </a>
-      </li>
-      <li>
-        <a href="trans_details.html">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          Account Statement
-        </a>
-      </li>
-      <li>
-        <a href="pass_change.html">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          Change Password
-        </a>
-      </li>
-      <li>
-        <a href="change_pin.html">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
-          Change Pin
-        </a>
-      </li>
+      <li class="active"><a href="dashboard.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a></li>
+      <li><a href="transfer.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Payments</a></li>
+      <li><a href="add_funds.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Add Funds</a></li>
+      <li><a href="trans_details.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Account Statement</a></li>
+      <li><a href="pass_change.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Change Password</a></li>
+      <li><a href="change_pin.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Change Pin</a></li>
     </ul>
 
     <div class="sidebar-section-label">Support</div>
     <ul class="sidebar-nav">
-      <li>
-        <a href="chat.html">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          Help / Chat ..
-        </a>
-      </li>
-      <li>
-        <a href="#">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Feedback
-        </a>
-      </li>
+      <li><a href="chat.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help / Chat ..</a></li>
+      <li><a href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Feedback</a></li>
     </ul>
 
     <div class="sidebar-bottom">
       <ul class="sidebar-nav">
-        <li>
-          <a href="#">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-            Settings
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Logout
-          </a>
-        </li>
+        <li><a href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Settings</a></li>
+        <li><a href="#" id="logoutLink"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Logout</a></li>
       </ul>
       <div class="theme-toggle">
         <button class="theme-btn active">☀ Light</button>
         <button class="theme-btn">🌙 Dark</button>
-       <a href="chat.html" class="notification-icon" id="dashboardNotifBtn">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
-    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-  </svg>
-  <div class="notif-dot" id="dashboardNotifDot"></div>
-</a>
+        <a href="chat.html" class="notification-icon" id="dashboardNotifBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div class="notif-dot" id="dashboardNotifDot"></div>
+        </a>
       </div>
     </div>
   </div>
@@ -1035,12 +1099,18 @@
   <div class="main">
     <!-- Top bar -->
     <div class="topbar">
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
       <div class="search-bar">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" placeholder="Search anything...">
       </div>
       <div class="topbar-actions">
-      
+        <button class="right-panel-toggle" id="rightPanelToggle">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+          Cards & Tools
+        </button>
         <button class="notif-btn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <div class="notif-dot"></div>
@@ -1069,7 +1139,7 @@
           <div class="quick-tx-card">
             <div class="quick-tx-title">Quick Transaction</div>
             <div class="quick-tx-people">
-              <div class="tx-person">
+              <div class="tx-person" id="quickTransferPerson">
                 <div class="tx-avatar-wrap transfer-btn">+</div>
                 <div class="tx-person-name">Transfer</div>
                 <div class="tx-person-id">Manual</div>
@@ -1099,7 +1169,6 @@
                 <div class="tx-person-name">Robert</div>
                 <div class="tx-person-id">586612</div>
               </div>
-              <div class="tx-arrow">›</div>
             </div>
           </div>
         </div>
@@ -1119,10 +1188,7 @@
                 <div class="bar green" style="height:35%"></div>
                 <div class="bar green" style="height:55%"></div>
                 <div class="bar green" style="height:45%"></div>
-                <div class="bar green highlight" style="height:85%">
-                  <div class="bar-dot" style="background:#22c55e;"></div>
-                  <div class="bar-tooltip">$276</div>
-                </div>
+                <div class="bar green highlight" style="height:85%"><div class="bar-dot" style="background:#22c55e;"></div><div class="bar-tooltip">$276</div></div>
                 <div class="bar green" style="height:60%"></div>
                 <div class="bar green" style="height:50%"></div>
                 <div class="bar green" style="height:65%"></div>
@@ -1131,9 +1197,7 @@
                 <div class="bar green" style="height:70%"></div>
               </div>
             </div>
-            <div class="chart-labels">
-              <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
-            </div>
+            <div class="chart-labels"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span></div>
           </div>
 
           <div class="chart-card">
@@ -1151,19 +1215,14 @@
                 <div class="bar yellow" style="height:44%"></div>
                 <div class="bar yellow" style="height:60%"></div>
                 <div class="bar yellow" style="height:55%"></div>
-                <div class="bar yellow highlight" style="height:88%">
-                  <div class="bar-dot" style="background:#f59e0b;"></div>
-                  <div class="bar-tooltip">$276</div>
-                </div>
+                <div class="bar yellow highlight" style="height:88%"><div class="bar-dot" style="background:#f59e0b;"></div><div class="bar-tooltip">$276</div></div>
                 <div class="bar yellow" style="height:52%"></div>
                 <div class="bar yellow" style="height:40%"></div>
                 <div class="bar yellow" style="height:60%"></div>
                 <div class="bar yellow" style="height:65%"></div>
               </div>
             </div>
-            <div class="chart-labels">
-              <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
-            </div>
+            <div class="chart-labels"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span></div>
           </div>
         </div>
 
@@ -1184,127 +1243,69 @@
             </div>
           </div>
 
-          <table class="tx-table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Invoice</th>
-                <th>Transactions</th>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><span class="checkbox"></span></td>
-                <td>
-                  <div class="invoice-cell">
-                    <svg class="doc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                    INV_00092333
-                  </div>
-                </td>
-                <td>
-                  <div class="tx-name-cell">
-                    <div class="tx-logo" style="background:#e0f2fe;">
-                      <span style="font-size:16px;">🎨</span>
-                    </div>
-                    <div>
-                      <div class="tx-name">Figma Pro Plan</div>
-                      <div class="tx-sub">Design Tools</div>
-                    </div>
-                  </div>
-                </td>
-                <td style="color:#888; font-size:12.5px;">11 Nov, 2023</td>
-                <td class="amount-neg">-$64.00</td>
-                <td><span class="badge badge-completed">✓ Completed</span></td>
-              </tr>
-              <tr>
-                <td><span class="checkbox"></span></td>
-                <td>
-                  <div class="invoice-cell">
-                    <svg class="doc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                    INV_00092223
-                  </div>
-                </td>
-                <td>
-                  <div class="tx-name-cell">
-                    <div class="tx-logo" style="background:#fff0f0;">
-                      <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#eb001b" opacity="0.85"/><circle cx="12" cy="12" r="6" fill="#f79e1b"/></svg>
-                    </div>
-                    <div>
-                      <div class="tx-name">Internal Payment</div>
-                      <div class="tx-sub">billing@gmail.com</div>
-                    </div>
-                  </div>
-                </td>
-                <td style="color:#888; font-size:12.5px;">11 Nov, 2023</td>
-                <td class="amount-pos">+$200.00</td>
-                <td><span class="badge badge-progress">✦ On Progress</span></td>
-              </tr>
-              <tr>
-                <td><span class="checkbox"></span></td>
-                <td>
-                  <div class="invoice-cell">
-                    <svg class="doc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                    INV_00092323
-                  </div>
-                </td>
-                <td>
-                  <div class="tx-name-cell">
-                    <div class="tx-logo" style="background:#fce4ec;">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#ea4c89"/><path d="M8 12 a4 4 0 0 1 8 0 a4 4 0 0 1 -8 0" fill="white" opacity="0.9"/></svg>
-                    </div>
-                    <div>
-                      <div class="tx-name">Dribbble Premium</div>
-                      <div class="tx-sub">Design Tools</div>
-                    </div>
-                  </div>
-                </td>
-                <td style="color:#888; font-size:12.5px;">11 Nov, 2023</td>
-                <td class="amount-neg">-$64.00</td>
-                <td><span class="badge badge-completed">✓ Completed</span></td>
-              </tr>
-              <tr>
-                <td><span class="checkbox"></span></td>
-                <td>
-                  <div class="invoice-cell">
-                    <svg class="doc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                    INV_00092323
-                  </div>
-                </td>
-                <td>
-                  <div class="tx-name-cell">
-                    <div class="tx-logo" style="background:#fee2e2;">
-                      <svg width="20" height="20" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#ff0000"/><polygon points="10,7 17,12 10,17" fill="white"/></svg>
-                    </div>
-                    <div>
-                      <div class="tx-name">YouTube Premium</div>
-                      <div class="tx-sub">Design Tools</div>
-                    </div>
-                  </div>
-                </td>
-                <td style="color:#888; font-size:12.5px;">11 Nov, 2023</td>
-                <td class="amount-neg">-$64.00</td>
-                <td><span class="badge badge-completed">✓ Completed</span></td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="tx-table-wrap">
+            <table class="tx-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Invoice</th>
+                  <th>Transactions</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="checkbox"></span></td>
+                  <td><div class="invoice-cell"><svg class="doc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>INV_00092333</div></td>
+                  <td><div class="tx-name-cell"><div class="tx-logo" style="background:#e0f2fe;"><span style="font-size:16px;">🎨</span></div><div><div class="tx-name">Figma Pro Plan</div><div class="tx-sub">Design Tools</div></div></div></td>
+                  <td style="color:#888; font-size:12.5px;">11 Nov, 2023</td>
+                  <td class="amount-neg">-$64.00</td>
+                  <td><span class="badge badge-completed">✓ Completed</span></td>
+                </tr>
+                <tr>
+                  <td><span class="checkbox"></span></td>
+                  <td><div class="invoice-cell"><svg class="doc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>INV_00092223</div></td>
+                  <td><div class="tx-name-cell"><div class="tx-logo" style="background:#fff0f0;"><svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#eb001b" opacity="0.85"/><circle cx="12" cy="12" r="6" fill="#f79e1b"/></svg></div><div><div class="tx-name">Internal Payment</div><div class="tx-sub">billing@gmail.com</div></div></div></td>
+                  <td style="color:#888; font-size:12.5px;">11 Nov, 2023</td>
+                  <td class="amount-pos">+$200.00</td>
+                  <td><span class="badge badge-progress">✦ On Progress</span></td>
+                </tr>
+                <tr>
+                  <td><span class="checkbox"></span></td>
+                  <td><div class="invoice-cell"><svg class="doc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>INV_00092323</div></td>
+                  <td><div class="tx-name-cell"><div class="tx-logo" style="background:#fce4ec;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#ea4c89"/><path d="M8 12 a4 4 0 0 1 8 0 a4 4 0 0 1 -8 0" fill="white" opacity="0.9"/></svg></div><div><div class="tx-name">Dribbble Premium</div><div class="tx-sub">Design Tools</div></div></div></td>
+                  <td style="color:#888; font-size:12.5px;">11 Nov, 2023</td>
+                  <td class="amount-neg">-$64.00</td>
+                  <td><span class="badge badge-completed">✓ Completed</span></td>
+                </tr>
+                <tr>
+                  <td><span class="checkbox"></span></td>
+                  <td><div class="invoice-cell"><svg class="doc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>INV_00092323</div></td>
+                  <td><div class="tx-name-cell"><div class="tx-logo" style="background:#fee2e2;"><svg width="20" height="20" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#ff0000"/><polygon points="10,7 17,12 10,17" fill="white"/></svg></div><div><div class="tx-name">YouTube Premium</div><div class="tx-sub">Design Tools</div></div></div></td>
+                  <td style="color:#888; font-size:12.5px;">11 Nov, 2023</td>
+                  <td class="amount-neg">-$64.00</td>
+                  <td><span class="badge badge-completed">✓ Completed</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
       </div>
 
       <!-- Right panel -->
-      <div class="right-panel">
+      <div class="right-panel" id="rightPanel">
+        <button class="right-panel-close" id="rightPanelClose" aria-label="Close panel">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
 
         <!-- My Cards -->
         <div>
           <div class="panel-section-header">
             <div class="panel-title">My Cards</div>
-            <button class="add-new-btn">
-              Add New
-              <div class="add-circle">+</div>
-            </button>
+            <button class="add-new-btn">Add New<div class="add-circle">+</div></button>
           </div>
           <div class="credit-card">
             <div class="card-shine"></div>
@@ -1315,19 +1316,13 @@
             <div class="card-holder">Thomas Fletcher</div>
             <div class="card-number">1233  5432  3521  3090</div>
             <div class="card-footer">
-              <div class="card-footer-item">
-                <div class="card-footer-label">Exp</div>
-                <div class="card-footer-val">09/24</div>
-              </div>
-              <div class="card-footer-item" style="text-align:right">
-                <div class="card-footer-label">CVV</div>
-                <div class="card-footer-val">341</div>
-              </div>
+              <div class="card-footer-item"><div class="card-footer-label">Exp</div><div class="card-footer-val">09/24</div></div>
+              <div class="card-footer-item" style="text-align:right"><div class="card-footer-label">CVV</div><div class="card-footer-val">341</div></div>
             </div>
           </div>
         </div>
 
-               <!-- Conversion Rate -->
+        <!-- Conversion Rate -->
         <div class="conv-section">
           <div class="conv-title">Conversion Rate</div>
           <div class="conv-label">Amount</div>
@@ -1354,6 +1349,7 @@
             <span id="conv-result" class="conv-result" style="color:rgba(255,255,255,0.7); font-size:11px;"></span>
           </button>
         </div>
+
         <!-- Workflows -->
         <div class="wf-section">
           <div class="wf-header">
@@ -1363,54 +1359,93 @@
             </div>
           </div>
           <div class="wf-item">
-            <div class="wf-icon dark">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            </div>
-            <div>
-              <div class="wf-name">Transactions</div>
-              <div class="wf-sub">Auto Block</div>
-            </div>
+            <div class="wf-icon dark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div><div class="wf-name">Transactions</div><div class="wf-sub">Auto Block</div></div>
             <div class="wf-arrow">›</div>
           </div>
           <div class="wf-item light-item">
-            <div class="wf-icon light">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M3 12h1M20 12h1M12 3v1M12 20v1"/></svg>
-            </div>
-            <div>
-              <div class="wf-name">Create order</div>
-              <div class="wf-sub">Looks OK</div>
-            </div>
+            <div class="wf-icon light"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M3 12h1M20 12h1M12 3v1M12 20v1"/></svg></div>
+            <div><div class="wf-name">Create order</div><div class="wf-sub">Looks OK</div></div>
             <div class="wf-arrow">›</div>
           </div>
-          <div class="wf-upcoming">
-            Upcoming <span class="wf-upcoming-arrow">→</span>
-          </div>
+          <div class="wf-upcoming">Upcoming <span class="wf-upcoming-arrow">→</span></div>
         </div>
-
       </div>
     </div><!-- /content -->
   </div><!-- /main -->
+
 <script type="module">
   import { auth, db } from './firebase-config.js';
   import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
   import { doc, getDoc, setDoc, collection, query, where, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
+  // ===== MOBILE SIDEBAR DRAWER =====
+  const sidebar = document.getElementById('sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    sidebarOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    sidebarOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  hamburgerBtn.addEventListener('click', openSidebar);
+  sidebarOverlay.addEventListener('click', closeSidebar);
+
+  // Close sidebar when clicking a nav link on mobile
+  sidebar.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 768) closeSidebar();
+    });
+  });
+
+  // ===== RIGHT PANEL DRAWER =====
+  const rightPanel = document.getElementById('rightPanel');
+  const rightPanelToggle = document.getElementById('rightPanelToggle');
+  const rightPanelClose = document.getElementById('rightPanelClose');
+
+  function openRightPanel() {
+    rightPanel.classList.add('open');
+    // Reuse sidebar overlay for right panel too
+    sidebarOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeRightPanel() {
+    rightPanel.classList.remove('open');
+    sidebarOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (rightPanelToggle) rightPanelToggle.addEventListener('click', openRightPanel);
+  if (rightPanelClose) rightPanelClose.addEventListener('click', closeRightPanel);
+
+  // Close right panel on overlay click (check which is open)
+  sidebarOverlay.addEventListener('click', () => {
+    if (rightPanel.classList.contains('open')) {
+      closeRightPanel();
+    }
+  });
+
+  // ===== FIREBASE AUTH =====
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = 'index.html';
       return;
     }
 
-    // Update avatar to first letter of email
     const avatar = document.querySelector('.avatar');
     if (avatar && user.email) {
       avatar.textContent = user.email[0].toUpperCase();
     }
 
-    // Show loading animation for balance card
     const balanceCard = document.querySelector('.balance-card');
     const balanceEl = document.querySelector('.balance-amount');
-    
+
     if (balanceCard) {
       const originalContent = balanceCard.innerHTML;
       balanceCard.innerHTML = `
@@ -1421,7 +1456,6 @@
       `;
     }
 
-    // Load user balance from Firestore
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
     let userData = userSnap.data();
@@ -1431,7 +1465,6 @@
       userData = { balance: 10000 };
     }
 
-    // Restore balance card with data
     if (balanceCard) {
       balanceCard.innerHTML = `
         <div class="balance-label">Total Balance in USD</div>
@@ -1443,9 +1476,12 @@
           </button>
         </div>
       `;
+      // Re-bind send button after innerHTML replacement
+      const newSendBtn = balanceCard.querySelector('.bal-btn');
+      if (newSendBtn) newSendBtn.addEventListener('click', () => { window.location.href = 'transfer.html'; });
     }
 
-    // Load last 10 transactions
+    // Transactions
     const txQuery = query(
       collection(db, "transactions"),
       where("fromUserId", "==", user.uid),
@@ -1465,8 +1501,8 @@
       tbody.innerHTML = '';
       snapshot.forEach((docSnap) => {
         const tx = docSnap.data();
-        const date = tx.timestamp 
-          ? tx.timestamp.toDate().toLocaleDateString('en-US', {day:'numeric', month:'short', year:'numeric'}) 
+        const date = tx.timestamp
+          ? tx.timestamp.toDate().toLocaleDateString('en-US', {day:'numeric', month:'short', year:'numeric'})
           : '—';
         const inv = 'INV_' + docSnap.id.slice(-8).toUpperCase();
         const initial = (tx.toName || '?')[0].toUpperCase();
@@ -1477,21 +1513,8 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><span class="checkbox"></span></td>
-          <td>
-            <div class="invoice-cell">
-              <svg class="doc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              ${inv}
-            </div>
-          </td>
-          <td>
-            <div class="tx-name-cell">
-              <div class="tx-logo" style="background:#f0f0f0; color:#555; font-weight:600; font-size:14px;">${initial}</div>
-              <div>
-                <div class="tx-name">${tx.toName || 'Transfer'}</div>
-                <div class="tx-sub">${tx.reason || tx.toBank || 'Payment'}</div>
-              </div>
-            </div>
-          </td>
+          <td><div class="invoice-cell"><svg class="doc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${inv}</div></td>
+          <td><div class="tx-name-cell"><div class="tx-logo" style="background:#f0f0f0; color:#555; font-weight:600; font-size:14px;">${initial}</div><div><div class="tx-name">${tx.toName || 'Transfer'}</div><div class="tx-sub">${tx.reason || tx.toBank || 'Payment'}</div></div></div></td>
           <td style="color:#888; font-size:12.5px;">${date}</td>
           <td class="amount-neg">${amountStr}</td>
           <td><span class="badge ${statusClass}">${statusText}</span></td>
@@ -1503,51 +1526,35 @@
       if (err.message && err.message.includes('index')) {
         const tbody = document.querySelector('.tx-table tbody');
         if (tbody) {
-          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:#ef4444;">
-            Firestore composite index required. Check the browser console for a direct link to create it, click that link, press "Create index", wait 1-2 minutes, then refresh this page.
-          </td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:#ef4444;">Firestore composite index required. Check the browser console for a direct link to create it, click that link, press "Create index", wait 1-2 minutes, then refresh this page.</td></tr>`;
         }
       }
     });
   });
 
   // Logout
-  document.querySelectorAll('.sidebar-nav a').forEach(link => {
-    if (link.textContent.includes('Logout')) {
-      link.addEventListener('click', async (e) => {
-        e.preventDefault();
-        await signOut(auth);
-        window.location.href = 'index.html';
-      });
-    }
-  });
+  const logoutLink = document.getElementById('logoutLink');
+  if (logoutLink) {
+    logoutLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await signOut(auth);
+      window.location.href = 'index.html';
+    });
+  }
 
-  // Send button → transfer page
+  // Send button
   const sendBtn = document.querySelector('.balance-actions .bal-btn:first-child');
   if (sendBtn) {
-    sendBtn.addEventListener('click', () => {
-      window.location.href = 'transfer.html';
-    });
+    sendBtn.addEventListener('click', () => { window.location.href = 'transfer.html'; });
   }
 
-  // Move Money button → transfer page
-  const moveBtn = document.querySelector('.btn-move');
-  if (moveBtn) {
-    moveBtn.addEventListener('click', () => {
-      window.location.href = 'transfer.html';
-    });
-  }
-
-  // Quick Transfer avatar → transfer page
-  const quickTransfer = document.querySelector('.tx-avatar-wrap.transfer-btn');
+  // Quick Transfer
+  const quickTransfer = document.getElementById('quickTransferPerson');
   if (quickTransfer) {
-    quickTransfer.closest('.tx-person').style.cursor = 'pointer';
-    quickTransfer.closest('.tx-person').addEventListener('click', () => {
-      window.location.href = 'transfer.html';
-    });
+    quickTransfer.addEventListener('click', () => { window.location.href = 'transfer.html'; });
   }
 
-    // --- Currency Conversion Feature ---
+  // ===== CURRENCY CONVERSION =====
   const convAmountFrom = document.getElementById('conv-amount-from');
   const convCurrencyFrom = document.getElementById('conv-currency-from');
   const convAmountTo = document.getElementById('conv-amount-to');
@@ -1559,11 +1566,9 @@
 
   async function fetchRates(base = 'USD') {
     try {
-      // Using open.er-api.com (free, no API key required, CORS enabled)
       const res = await fetch(`https://open.er-api.com/v6/latest/${base}`);
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
-      
       if (data.result === "success") {
         rates = data.rates;
         updateConversion();
@@ -1572,7 +1577,6 @@
       }
     } catch (err) {
       console.warn("Exchange rate API failed, using fallback rates.", err);
-      // Fallback static rates to prevent UI breakage if the external API is blocked/unavailable
       rates = { USD: 1, EUR: 0.92, GBP: 0.79, JPY: 149.5, CAD: 1.36, AUD: 1.53 };
       updateConversion();
     }
@@ -1582,61 +1586,39 @@
     const amount = parseFloat(convAmountFrom.value) || 0;
     const from = convCurrencyFrom.value;
     const to = convCurrencyTo.value;
-
     if (!rates[from] || !rates[to]) {
       convAmountTo.value = 'Err';
       if (convResultText) convResultText.textContent = 'Invalid currency';
       return;
     }
-
-    // Cross-rate calculation: (Amount * Rate_To) / Rate_From
-    // This math holds true regardless of the base currency used to fetch the rates
     const crossRate = rates[to] / rates[from];
     const converted = (amount * crossRate).toFixed(2);
-
     if (convAmountTo) convAmountTo.value = converted;
     if (convResultText) convResultText.textContent = `${amount} ${from} = ${converted} ${to}`;
   }
 
-  // Event bindings for real-time updates
   if (convAmountFrom) convAmountFrom.addEventListener('input', updateConversion);
   if (convCurrencyFrom) convCurrencyFrom.addEventListener('change', () => fetchRates(convCurrencyFrom.value));
   if (convCurrencyTo) convCurrencyTo.addEventListener('change', updateConversion);
   if (convBtn) convBtn.addEventListener('click', updateConversion);
-
-  // Initialize on page load
   fetchRates('USD');
 
-
-
-if (localStorage.getItem('demo_new_message') === 'true') {
-    document.getElementById('notifBadge').style.display = 'block';
-  }
-
+  // ===== NOTIFICATION DOT =====
   const notifDot = document.getElementById('dashboardNotifDot');
-
-  // 1. Show the dot immediately if the flag was set previously
   if (localStorage.getItem('demo_new_message') === 'true') {
     notifDot.style.display = 'block';
   }
-
-  // 2. DEMO: Simulate a new message arriving 3 seconds after the dashboard loads
   setTimeout(() => {
     localStorage.setItem('demo_new_message', 'true');
     notifDot.style.display = 'block';
   }, 3000);
 
-    // --- Theme Toggle Logic ---
+  // ===== THEME TOGGLE =====
   const themeBtns = document.querySelectorAll('.theme-btn');
-  
-
-
 
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('synergy-theme', theme);
-    
-    // Update active states on the buttons
     themeBtns.forEach(btn => {
       const isLightBtn = btn.textContent.includes('Light');
       const shouldBeActive = (theme === 'light' && isLightBtn) || (theme === 'dark' && !isLightBtn);
@@ -1644,16 +1626,24 @@ if (localStorage.getItem('demo_new_message') === 'true') {
     });
   }
 
-  // Initialize button states on load
   const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
   applyTheme(currentTheme);
 
-  // Bind click events
   themeBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const isLightBtn = btn.textContent.includes('Light');
       applyTheme(isLightBtn ? 'light' : 'dark');
     });
+  });
+
+  // ===== HANDLE RESIZE: reset drawer states =====
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      closeSidebar();
+    }
+    if (window.innerWidth > 1024) {
+      closeRightPanel();
+    }
   });
 </script>
 </body>
