@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fundwise — Transfer Fund</title>
+<title>Synergy — Transfer Fund</title>
 <script>
   (function() {
     const savedTheme = localStorage.getItem('synergy-theme');
@@ -1005,6 +1005,22 @@
     .modal-description { font-size: 12px; margin-bottom: 16px; }
     .modal-details { padding: 10px; margin-bottom: 16px; font-size: 11.5px; }
   }
+  .logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  padding: 0 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.logo-img {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}
 </style>
 </head>
 <body>
@@ -1014,13 +1030,11 @@
 
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
-    <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      </div>
-      Fundwise
-    </div>
-
+   <div class="sidebar" id="sidebar">
+  <div class="logo">
+  <img src="logo.png" alt="Fundwise" class="logo-img">
+</div>
+</div>
     <div class="sidebar-section-label">General</div>
     <ul class="sidebar-nav">
       <li><a href="dashboard.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a></li>
