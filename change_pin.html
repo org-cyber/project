@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Synergy — Change Account Pin</title>
 <script>
-  // Synchronous theme initialization to prevent FOUC
   (function() {
     const savedTheme = localStorage.getItem('synergy-theme');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -29,16 +28,34 @@
     background: #fff; border-right: 1px solid #f0f0f0;
     display: flex; flex-direction: column; padding: 20px 0;
     height: 100vh;
+    position: relative;
+    z-index: 100;
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 99;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .sidebar-overlay.active {
+    display: block;
+    opacity: 1;
   }
   .logo {
     font-size: 20px; font-weight: 700; color: #1a1a1a;
     padding: 0 20px 22px; display: flex; align-items: center; gap: 6px;
   }
-  .logo-icon {
-    width: 22px; height: 22px; background: #7c3aed; border-radius: 5px;
-    display: flex; align-items: center; justify-content: center;
+  .logo-img {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
   }
-  .logo-icon svg { width: 12px; height: 12px; fill: white; }
   .sidebar-section-label {
     font-size: 11px; color: #aaa; font-weight: 500;
     padding: 0 20px 8px; letter-spacing: 0.02em;
@@ -46,14 +63,14 @@
   .sidebar-nav { list-style: none; margin-bottom: 18px; }
   .sidebar-nav li a {
     display: flex; align-items: center; gap: 10px;
-    padding: 8px 20px; font-size: 13.5px; color: #555;
+    padding: 11px 20px; font-size: 13.5px; color: #555;
     text-decoration: none; border-radius: 0;
     transition: background 0.15s; cursor: pointer;
   }
   .sidebar-nav li a:hover { background: #f7f7f7; }
   .sidebar-nav li.active a {
-    background: #f4f0ff; color: #7c3aed; font-weight: 500;
-    border-radius: 8px; margin: 0 8px; padding: 8px 12px;
+    background: #fef2f2; color: #ef4444; font-weight: 500;
+    border-radius: 8px; margin: 0 8px; padding: 11px 12px;
   }
   .nav-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
   .active .nav-icon { opacity: 1; }
@@ -73,9 +90,24 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   }
 
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 36px; height: 36px;
+    align-items: center; justify-content: center;
+    border-radius: 8px;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .hamburger:hover { background: #f5f5f5; }
+  .hamburger svg { width: 20px; height: 20px; stroke: #555; }
+
   .main {
     flex: 1; display: flex; flex-direction: column;
     overflow: hidden; background: #fafafa; height: 100vh;
+    min-width: 0;
   }
   .topbar {
     display: flex; align-items: center; gap: 12px;
@@ -97,11 +129,6 @@
     background: none; border: 1.5px solid #e0e0e0;
     border-radius: 8px; padding: 7px 14px; font-size: 13px;
     cursor: pointer; color: #444; font-weight: 500;
-  }
-  .btn-move {
-    background: #7c3aed; border: none; border-radius: 8px;
-    padding: 8px 16px; font-size: 13px; cursor: pointer;
-    color: #fff; font-weight: 500;
   }
   .notif-btn {
     position: relative; background: none; border: none; cursor: pointer;
@@ -128,7 +155,7 @@
   .content-main {
     flex: 1; padding: 24px 28px; overflow-y: auto;
     display: flex; flex-direction: column; gap: 20px;
-    align-items: stretch; justify-content: flex-start;
+    min-width: 0;
   }
   .right-panel {
     width: 260px; min-width: 260px;
@@ -140,7 +167,7 @@
   .card {
     background: #fff; border-radius: 12px;
     border: 1px solid #f0f0f0; padding: 28px;
-    width: 100%; max-width: 520px;
+    width: 100%;
   }
   .card-title {
     font-size: 15px; font-weight: 600; color: #111;
@@ -248,25 +275,105 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 2px; }
 
-  @media (max-width: 768px) {
-    .sidebar { display: none; }
-    .form-grid { grid-template-columns: 1fr; }
+  /* Right panel toggle & close */
+  .right-panel-toggle {
+    display: none;
+    background: none;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #444;
+    font-weight: 500;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+  .right-panel-close {
+    display: none;
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    transition: background 0.15s;
+  }
+  .right-panel-close:hover { background: #e0e0e0; }
+
+  /* ===== TABLET (≤ 1024px) ===== */
+  @media (max-width: 1024px) {
+    .right-panel {
+      position: fixed;
+      top: 0; right: 0;
+      height: 100vh;
+      z-index: 110;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+    }
+    .right-panel.open { transform: translateX(0); }
+    .right-panel-toggle { display: flex !important; }
+    .right-panel-close { display: flex !important; }
   }
 
+  /* ===== MOBILE (≤ 768px) ===== */
+  @media (max-width: 768px) {
+    body { overflow: hidden; }
 
-    /* =========================================
-     DARK THEME OVERRIDES (REFINED)
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      z-index: 100;
+      transform: translateX(-100%);
+      box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    .hamburger { display: flex; }
+
+    .topbar { padding: 10px 14px; gap: 8px; }
+    .btn-create, .btn-add-funds { display: none; }
+
+    .content { flex-direction: column; overflow-y: auto; }
+    .content-main { padding: 16px; gap: 16px; overflow-y: visible; }
+
+    .form-grid { grid-template-columns: 1fr; }
+    .form-input { font-size: 16px; }
+
+    .right-panel {
+      width: 280px; min-width: 280px;
+      position: fixed;
+      top: 0; right: 0;
+      height: 100vh;
+      z-index: 110;
+      transform: translateX(100%);
+      box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+    }
+    .right-panel.open { transform: translateX(0); }
+  }
+
+  @media (max-width: 480px) {
+    .topbar { padding: 8px 10px; gap: 6px; }
+    .avatar { width: 28px; height: 28px; font-size: 11px; }
+    .content-main { padding: 12px; gap: 12px; }
+    .right-panel { width: 100%; min-width: 100%; border-left: none; }
+  }
+
+  /* =========================================
+     DARK THEME OVERRIDES
      ========================================= */
-  
-  /* 1. Main Backgrounds (Softer dark gray, not pitch black) */
   [data-theme="dark"] body,
   [data-theme="dark"] .main,
   [data-theme="dark"] .content { 
-    background: #121214; /* A softer dark gray instead of pure black */
-    color: #f4f4f5; 
+    background: #121214; color: #f4f4f5; 
   }
-  
-  /* 2. Cards & Surfaces (Slightly lighter than the background for depth) */
   [data-theme="dark"] .sidebar, 
   [data-theme="dark"] .topbar, 
   [data-theme="dark"] .balance-card, 
@@ -275,11 +382,8 @@
   [data-theme="dark"] .tx-section, 
   [data-theme="dark"] .right-panel,
   [data-theme="dark"] .credit-card { 
-    background: #1c1c1f; /* Subtle contrast against the #121214 background */
-    border-color: #27272a; 
+    background: #1c1c1f; border-color: #27272a; 
   }
-  
-  /* Typography */
   [data-theme="dark"] .logo, 
   [data-theme="dark"] .panel-title, 
   [data-theme="dark"] .conv-title, 
@@ -287,14 +391,11 @@
   [data-theme="dark"] .balance-amount, 
   [data-theme="dark"] .tx-name,
   [data-theme="dark"] .wf-item .wf-name { color: #f4f4f5; }
-  
   [data-theme="dark"] .sidebar-nav li a, 
   [data-theme="dark"] .tx-sub, 
   [data-theme="dark"] .balance-label, 
   [data-theme="dark"] .chart-title, 
   [data-theme="dark"] .conv-label { color: #a1a1aa; }
-  
-  /* Inputs & Controls */
   [data-theme="dark"] .search-bar, 
   [data-theme="dark"] .tx-search, 
   [data-theme="dark"] .conv-input-row, 
@@ -309,103 +410,61 @@
   [data-theme="dark"] .conv-input { color: #f4f4f5; }
   [data-theme="dark"] .search-bar input::placeholder,
   [data-theme="dark"] .tx-search input::placeholder { color: #71717a; }
-
-  /* Interactive States */
-  [data-theme="dark"] .sidebar-nav li.active a { background: #2e1065; color: #c4b5fd; }
+  [data-theme="dark"] .sidebar-nav li.active a { background: #450a0a; color: #fca5a5; }
   [data-theme="dark"] .sidebar-nav li a:hover { background: #27272a; }
-  
   [data-theme="dark"] .btn-create, 
   [data-theme="dark"] .btn-add-funds, 
-  [data-theme="dark"] .bal-btn { border-color: #3f3f46; color: #d4d4d8; }
+  [data-theme="dark"] .bal-btn,
+  [data-theme="dark"] .right-panel-toggle { border-color: #3f3f46; color: #d4d4d8; }
   [data-theme="dark"] .bal-btn:hover, [data-theme="dark"] .btn-create:hover { background: #27272a; }
-
   [data-theme="dark"] .theme-btn.active { background: #3f3f46; color: #f4f4f5; box-shadow: none; }
-  
-  /* Tables, Charts & Badges */
   [data-theme="dark"] .tx-table th { color: #71717a; border-bottom-color: #27272a; }
   [data-theme="dark"] .tx-table td { border-bottom-color: #27272a; color: #d4d4d8; }
   [data-theme="dark"] .badge-completed { background: #064e3b; color: #6ee7b7; }
   [data-theme="dark"] .badge-progress { background: #713f12; color: #fcd34d; }
-  [data-theme="dark"] .bar-tooltip { color: #f4f4f5; } /* Fix tooltip text visibility on dark bars */
-  
-  /* Workflows & Misc */
+  [data-theme="dark"] .bar-tooltip { color: #f4f4f5; }
   [data-theme="dark"] .wf-item.light-item { background: #27272a; border-color: #3f3f46; }
   [data-theme="dark"] .wf-item.light-item .wf-name { color: #f4f4f5; }
   [data-theme="dark"] .wf-item.light-item .wf-sub { color: #4ade80; }
   [data-theme="dark"] .wf-icon.light { background: #2e1065; }
   [data-theme="dark"] .checkbox { border-color: #52525b; }
-    /* =========================================
-     MISSING OVERRIDES FOR trans_details.html
-     ========================================= */
-  
-  /* 1. The Table Wrapper (This page uses .card, dashboard used .tx-section) */
-  [data-theme="dark"] .card {
-    background: #1c1c1f;
-    border-color: #27272a;
-  }
-
-  /* 2. Table Row Hover (Currently hardcoded to light #fafafa) */
-  [data-theme="dark"] .tx-table tr:hover td {
-    background: #27272a; 
-  }
-
-  /* 3. Page Header Typography (Currently hardcoded to #111 and #888) */
+  [data-theme="dark"] .card { background: #1c1c1f; border-color: #27272a; }
+  [data-theme="dark"] .tx-table tr:hover td { background: #27272a; }
   [data-theme="dark"] .page-title { color: #f4f4f5; }
   [data-theme="dark"] .page-subtitle { color: #a1a1aa; }
-
-  /* 4. Workflows Settings Button */
   [data-theme="dark"] .wf-settings { background: #27272a; }
   [data-theme="dark"] .wf-settings svg { stroke: #a1a1aa; }
-
-  /* 5. Empty State */
   [data-theme="dark"] .empty-state { color: #71717a; }
   [data-theme="dark"] .empty-state svg { stroke: #3f3f46; }
-    /* =========================================
-     MISSING OVERRIDES FOR add_funds.html
-     ========================================= */
-  
-  /* 1. Card Title */
   [data-theme="dark"] .card-title { color: #f4f4f5; }
-
-  /* 2. Form Elements */
   [data-theme="dark"] .form-label { color: #a1a1aa; }
   [data-theme="dark"] .form-input { 
-    background: #27272a; 
-    border-color: #3f3f46; 
-    color: #f4f4f5; 
+    background: #27272a; border-color: #3f3f46; color: #f4f4f5; 
   }
   [data-theme="dark"] .form-input::placeholder { color: #71717a; }
-  
-  /* Increase focus shadow opacity so it's visible on dark backgrounds */
   [data-theme="dark"] .form-input:focus {
     border-color: #7c3aed;
     box-shadow: 0 0 0 3px rgba(124,58,237,0.25);
   }
-
-  /* 3. Balance Display Box */
-  /* Use a deep dark purple to match the light theme's #f4f0ff */
-  [data-theme="dark"] .balance-display { 
-    background: #2e1065; 
-    border: 1px solid #3f3f46;
-  }
-  
-  /* Override the global gray balance-label specifically for this purple box */
-  [data-theme="dark"] .balance-display .balance-label { color: #c4b5fd; } 
-  
-  /* Force override inline background colors on transaction logos */
-  [data-theme="dark"] .tx-logo { background: #27272a !important; } 
+  [data-theme="dark"] .balance-display { background: #2e1065; border: 1px solid #3f3f46; }
+  [data-theme="dark"] .balance-display .balance-label { color: #c4b5fd; }
+  [data-theme="dark"] .tx-logo { background: #27272a !important; }
+  [data-theme="dark"] .hamburger:hover { background: #27272a; }
+  [data-theme="dark"] .hamburger svg { stroke: #a1a1aa; }
+  [data-theme="dark"] .sidebar-overlay { background: rgba(0,0,0,0.6); }
+  [data-theme="dark"] .right-panel-close { background: #3f3f46; }
+  [data-theme="dark"] .right-panel-close:hover { background: #52525b; }
+  [data-theme="dark"] .right-panel-close svg { stroke: #a1a1aa; }
 </style>
 </head>
 <body>
 
-  <div class="sidebar">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="sidebar" id="sidebar">
     <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      </div>
-      Fundwise
+      <img src="logo.png" alt="Fundwise" class="logo-img">
     </div>
-    <div class="sidebar-section-label">General</div>
     <ul class="sidebar-nav">
       <li><a href="dashboard.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a></li>
       <li><a href="transfer.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Payments</a></li>
@@ -416,8 +475,8 @@
     </ul>
     <div class="sidebar-section-label">Support</div>
     <ul class="sidebar-nav">
-      <li><a href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a></li>
-      <li><a href="#"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Feedback</a></li>
+      <li><a href="chat.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Help</a></li>
+      <li><a href="chat.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Feedback</a></li>
     </ul>
     <div class="sidebar-bottom">
       <ul class="sidebar-nav">
@@ -433,12 +492,18 @@
 
   <div class="main">
     <div class="topbar">
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
       <div class="search-bar">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" placeholder="Search anything...">
       </div>
       <div class="topbar-actions">
-       
+        <button class="right-panel-toggle" id="rightPanelToggle">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+          Cards & Tools
+        </button>
         <button class="notif-btn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <div class="notif-dot"></div>
@@ -450,30 +515,33 @@
     <div class="content">
       <div class="content-main">
         <div class="card">
-        <div class="card-title">Fill Information Below to Change Account Pin</div>
-        <form class="form-grid">
-          <div class="form-group">
-            <label class="form-label"><span class="required">*</span> Old Pin</label>
-            <input class="form-input" type="password" maxlength="6" placeholder="••••••">
-          </div>
-          <div class="form-group">
-            <label class="form-label"><span class="required">*</span> New Pin</label>
-            <input class="form-input" type="password" maxlength="6" placeholder="••••••">
-          </div>
-          <div class="form-group full-width">
-            <label class="form-label"><span class="required">*</span> Account Password</label>
-            <input class="form-input" type="password" placeholder="Enter your account password">
-          </div>
-          <div class="form-group full-width">
-            <button class="btn-primary" type="submit">
-              Update
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </button>
-          </div>
-        </form>
+          <div class="card-title">Fill Information Below to Change Account Pin</div>
+          <form class="form-grid">
+            <div class="form-group">
+              <label class="form-label"><span class="required">*</span> Old Pin</label>
+              <input class="form-input" type="password" maxlength="6" placeholder="••••••">
+            </div>
+            <div class="form-group">
+              <label class="form-label"><span class="required">*</span> New Pin</label>
+              <input class="form-input" type="password" maxlength="6" placeholder="••••••">
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label"><span class="required">*</span> Account Password</label>
+              <input class="form-input" type="password" placeholder="Enter your account password">
+            </div>
+            <div class="form-group full-width">
+              <button class="btn-primary" type="submit">
+                Update
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-      <div class="right-panel">
+      <div class="right-panel" id="rightPanel">
+        <button class="right-panel-close" id="rightPanelClose" aria-label="Close panel">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
         <div>
           <div class="panel-section-header"><div class="panel-title">My Cards</div><button class="add-new-btn">Add New<div class="add-circle">+</div></button></div>
           <div class="credit-card"><div class="card-shine"></div><div class="card-top"><div class="card-brand-name">Fundwise</div><div class="visa-logo">VISA</div></div><div class="card-holder">Thomas Fletcher</div><div class="card-number">1233  5432  3521  3090</div><div class="card-footer"><div class="card-footer-item"><div class="card-footer-label">Exp</div><div class="card-footer-val">09/24</div></div><div class="card-footer-item" style="text-align:right"><div class="card-footer-label">CVV</div><div class="card-footer-val">341</div></div></div></div>
@@ -484,77 +552,128 @@
     </div>
   </div>
 
-  <script type="module">
-    import { auth, db } from './firebase-config.js';
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+<script type="module">
+  import { auth, db } from './firebase-config.js';
+  import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+  import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-    // Auth guard: wait for Firebase to finish checking session
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe();
-      if (!user) {
-        window.location.href = 'index.html';
-        return;
-      }
-      // Update avatar to first letter of email
-      const avatar = document.querySelector('.avatar');
-      if (avatar && user.email) {
-        avatar.textContent = user.email[0].toUpperCase();
-      }
+  // ===== MOBILE SIDEBAR =====
+  const sidebar = document.getElementById('sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    sidebarOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    sidebarOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (hamburgerBtn) hamburgerBtn.addEventListener('click', openSidebar);
+  sidebarOverlay.addEventListener('click', () => {
+    if (rightPanel.classList.contains('open')) {
+      closeRightPanel();
+    } else {
+      closeSidebar();
+    }
+  });
+
+  sidebar.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 768) closeSidebar();
     });
+  });
 
-    // Logout handler
-    document.getElementById('logoutLink').addEventListener('click', async (e) => {
-      e.preventDefault();
-      await signOut(auth);
+  // ===== RIGHT PANEL DRAWER =====
+  const rightPanel = document.getElementById('rightPanel');
+  const rightPanelToggle = document.getElementById('rightPanelToggle');
+  const rightPanelClose = document.getElementById('rightPanelClose');
+
+  function openRightPanel() {
+    rightPanel.classList.add('open');
+    sidebarOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeRightPanel() {
+    rightPanel.classList.remove('open');
+    sidebarOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (rightPanelToggle) rightPanelToggle.addEventListener('click', openRightPanel);
+  if (rightPanelClose) rightPanelClose.addEventListener('click', closeRightPanel);
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) closeSidebar();
+    if (window.innerWidth > 1024) closeRightPanel();
+  });
+
+  // ===== AUTH =====
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    unsubscribe();
+    if (!user) {
       window.location.href = 'index.html';
-    });
+      return;
+    }
+    const avatar = document.querySelector('.avatar');
+    if (avatar && user.email) {
+      avatar.textContent = user.email[0].toUpperCase();
+    }
+  });
 
-    const form = document.querySelector('form');
-    const submitBtn = form.querySelector('.btn-primary');
+  document.getElementById('logoutLink').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await signOut(auth);
+    window.location.href = 'index.html';
+  });
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const user = auth.currentUser;
-      if (!user) return alert("Not logged in");
+  const form = document.querySelector('form');
+  const submitBtn = form.querySelector('.btn-primary');
 
-      const inputs = form.querySelectorAll('input[type="password"]');
-      const oldPin = inputs[0].value;
-      const newPin = inputs[1].value;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+    if (!user) return alert("Not logged in");
 
-      // Show loading state
-      submitBtn.classList.add('loading');
-      submitBtn.disabled = true;
+    const inputs = form.querySelectorAll('input[type="password"]');
+    const oldPin = inputs[0].value;
+    const newPin = inputs[1].value;
 
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        const data = userDoc.data() || {};
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
 
-        if (data.pin && data.pin !== oldPin) {
-          submitBtn.classList.remove('loading');
-          submitBtn.disabled = false;
-          return alert("Old PIN is incorrect");
-        }
+    try {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const data = userDoc.data() || {};
 
-        await updateDoc(doc(db, "users", user.uid), { pin: newPin });
+      if (data.pin && data.pin !== oldPin) {
         submitBtn.classList.remove('loading');
         submitBtn.disabled = false;
-        alert("PIN updated successfully");
-        form.reset();
-      } catch (err) {
-        submitBtn.classList.remove('loading');
-        submitBtn.disabled = false;
-        alert("Error: " + err.message);
+        return alert("Old PIN is incorrect");
       }
-    });
-      // --- Theme Toggle Logic ---
+
+      await updateDoc(doc(db, "users", user.uid), { pin: newPin });
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+      alert("PIN updated successfully");
+      form.reset();
+    } catch (err) {
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+      alert("Error: " + err.message);
+    }
+  });
+
+  // ===== THEME =====
   const themeBtns = document.querySelectorAll('.theme-btn');
-  
+
   function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('synergy-theme', theme);
-    
-    // Update active states on the buttons
     themeBtns.forEach(btn => {
       const isLightBtn = btn.textContent.includes('Light');
       const shouldBeActive = (theme === 'light' && isLightBtn) || (theme === 'dark' && !isLightBtn);
@@ -562,17 +681,15 @@
     });
   }
 
-  // Initialize button states on load
   const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
   applyTheme(currentTheme);
 
-  // Bind click events
   themeBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const isLightBtn = btn.textContent.includes('Light');
       applyTheme(isLightBtn ? 'light' : 'dark');
     });
   });
-  </script>
+</script>
 </body>
 </html>
