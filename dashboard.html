@@ -79,7 +79,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 20px;
+    padding: 12px 20px;
     font-size: 13.5px;
     color: #555;
     text-decoration: none;
@@ -89,12 +89,12 @@
   }
   .sidebar-nav li a:hover { background: #f7f7f7; }
   .sidebar-nav li.active a {
-    background: #f4f0ff;
-    color: #7c3aed;
+    background: #FEF2F2;
+    color: #DC2626;
     font-weight: 500;
     border-radius: 8px;
     margin: 0 8px;
-    padding: 8px 12px;
+    padding: 12px 12px;
   }
   .nav-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
   .active .nav-icon { opacity: 1; }
@@ -869,7 +869,7 @@
   [data-theme="dark"] .conv-input { color: #f4f4f5; }
   [data-theme="dark"] .search-bar input::placeholder,
   [data-theme="dark"] .tx-search input::placeholder { color: #71717a; }
-  [data-theme="dark"] .sidebar-nav li.active a { background: #2e1065; color: #c4b5fd; }
+  [data-theme="dark"] .sidebar-nav li.active a { background: #450A0A; color: #FCA5A5; }
   [data-theme="dark"] .sidebar-nav li a:hover { background: #27272a; }
   [data-theme="dark"] .btn-create,
   [data-theme="dark"] .btn-add-funds,
@@ -1077,7 +1077,6 @@
   <img src="logo.png" alt="Fundwise" class="logo-img">
 </div>
 
-    <div class="sidebar-section-label">General</div>
     <ul class="sidebar-nav">
       <li class="active"><a href="dashboard.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a></li>
       <li><a href="transfer.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Payments</a></li>
@@ -1425,240 +1424,80 @@
 
   function openRightPanel() {
     rightPanel.classList.add('open');
-    // Reuse sidebar overlay for right panel too
-    sidebarOverlay.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
   function closeRightPanel() {
     rightPanel.classList.remove('open');
-    sidebarOverlay.classList.remove('active');
     document.body.style.overflow = '';
   }
-
-  if (rightPanelToggle) rightPanelToggle.addEventListener('click', openRightPanel);
-  if (rightPanelClose) rightPanelClose.addEventListener('click', closeRightPanel);
-
-  // Close right panel on overlay click (check which is open)
-  sidebarOverlay.addEventListener('click', () => {
-    if (rightPanel.classList.contains('open')) {
-      closeRightPanel();
-    }
-  });
-
-  // ===== FIREBASE AUTH =====
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = 'index.html';
-      return;
-    }
-
-    const avatar = document.querySelector('.avatar');
-    if (avatar && user.email) {
-      avatar.textContent = user.email[0].toUpperCase();
-    }
-
-    const balanceCard = document.querySelector('.balance-card');
-    const balanceEl = document.querySelector('.balance-amount');
-
-    if (balanceCard) {
-      const originalContent = balanceCard.innerHTML;
-      balanceCard.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 120px;">
-          <div class="loader-spinner"></div>
-          <span class="loading-text">Loading your balance...</span>
-        </div>
-      `;
-    }
-
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
-    let userData = userSnap.data();
-
-    if (!userData) {
-      await setDoc(userRef, { email: user.email, balance: 10000, pin: "", createdAt: new Date() });
-      userData = { balance: 10000 };
-    }
-
-    if (balanceCard) {
-      balanceCard.innerHTML = `
-        <div class="balance-label">Total Balance in USD</div>
-        <div class="balance-amount">$` + (userData.balance || 0).toLocaleString() + `</div>
-        <div class="balance-actions">
-          <button class="bal-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-            Send
-          </button>
-        </div>
-      `;
-      // Re-bind send button after innerHTML replacement
-      const newSendBtn = balanceCard.querySelector('.bal-btn');
-      if (newSendBtn) newSendBtn.addEventListener('click', () => { window.location.href = 'transfer.html'; });
-    }
-
-    // Transactions
-    const txQuery = query(
-      collection(db, "transactions"),
-      where("fromUserId", "==", user.uid),
-      orderBy("timestamp", "desc"),
-      limit(10)
-    );
-
-    onSnapshot(txQuery, (snapshot) => {
-      const tbody = document.querySelector('.tx-table tbody');
-      if (!tbody) return;
-
-      if (snapshot.empty) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:#bbb;">No transactions yet</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = '';
-      snapshot.forEach((docSnap) => {
-        const tx = docSnap.data();
-        const date = tx.timestamp
-          ? tx.timestamp.toDate().toLocaleDateString('en-US', {day:'numeric', month:'short', year:'numeric'})
-          : '—';
-        const inv = 'INV_' + docSnap.id.slice(-8).toUpperCase();
-        const initial = (tx.toName || '?')[0].toUpperCase();
-        const amountStr = '-$' + (tx.amount || 0).toFixed(2);
-        const statusClass = tx.status === 'completed' ? 'badge-completed' : 'badge-progress';
-        const statusText = tx.status === 'completed' ? '✓ Completed' : '✦ ' + (tx.status || 'Pending');
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><span class="checkbox"></span></td>
-          <td><div class="invoice-cell"><svg class="doc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${inv}</div></td>
-          <td><div class="tx-name-cell"><div class="tx-logo" style="background:#f0f0f0; color:#555; font-weight:600; font-size:14px;">${initial}</div><div><div class="tx-name">${tx.toName || 'Transfer'}</div><div class="tx-sub">${tx.reason || tx.toBank || 'Payment'}</div></div></div></td>
-          <td style="color:#888; font-size:12.5px;">${date}</td>
-          <td class="amount-neg">${amountStr}</td>
-          <td><span class="badge ${statusClass}">${statusText}</span></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }, (err) => {
-      console.error('Transaction listener error:', err);
-      if (err.message && err.message.includes('index')) {
-        const tbody = document.querySelector('.tx-table tbody');
-        if (tbody) {
-          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:#ef4444;">Firestore composite index required. Check the browser console for a direct link to create it, click that link, press "Create index", wait 1-2 minutes, then refresh this page.</td></tr>`;
-        }
-      }
-    });
-  });
-
-  // Logout
-  const logoutLink = document.getElementById('logoutLink');
-  if (logoutLink) {
-    logoutLink.addEventListener('click', async (e) => {
-      e.preventDefault();
-      await signOut(auth);
-      window.location.href = 'index.html';
-    });
-  }
-
-  // Send button
-  const sendBtn = document.querySelector('.balance-actions .bal-btn:first-child');
-  if (sendBtn) {
-    sendBtn.addEventListener('click', () => { window.location.href = 'transfer.html'; });
-  }
-
-  // Quick Transfer
-  const quickTransfer = document.getElementById('quickTransferPerson');
-  if (quickTransfer) {
-    quickTransfer.addEventListener('click', () => { window.location.href = 'transfer.html'; });
-  }
-
-  // ===== CURRENCY CONVERSION =====
-  const convAmountFrom = document.getElementById('conv-amount-from');
-  const convCurrencyFrom = document.getElementById('conv-currency-from');
-  const convAmountTo = document.getElementById('conv-amount-to');
-  const convCurrencyTo = document.getElementById('conv-currency-to');
-  const convBtn = document.getElementById('conv-btn');
-  const convResultText = document.getElementById('conv-result');
-
-  let rates = {};
-
-  async function fetchRates(base = 'USD') {
-    try {
-      const res = await fetch(`https://open.er-api.com/v6/latest/${base}`);
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-      const data = await res.json();
-      if (data.result === "success") {
-        rates = data.rates;
-        updateConversion();
-      } else {
-        throw new Error(data.reason || "API returned failure");
-      }
-    } catch (err) {
-      console.warn("Exchange rate API failed, using fallback rates.", err);
-      rates = { USD: 1, EUR: 0.92, GBP: 0.79, JPY: 149.5, CAD: 1.36, AUD: 1.53 };
-      updateConversion();
-    }
-  }
-
-  function updateConversion() {
-    const amount = parseFloat(convAmountFrom.value) || 0;
-    const from = convCurrencyFrom.value;
-    const to = convCurrencyTo.value;
-    if (!rates[from] || !rates[to]) {
-      convAmountTo.value = 'Err';
-      if (convResultText) convResultText.textContent = 'Invalid currency';
-      return;
-    }
-    const crossRate = rates[to] / rates[from];
-    const converted = (amount * crossRate).toFixed(2);
-    if (convAmountTo) convAmountTo.value = converted;
-    if (convResultText) convResultText.textContent = `${amount} ${from} = ${converted} ${to}`;
-  }
-
-  if (convAmountFrom) convAmountFrom.addEventListener('input', updateConversion);
-  if (convCurrencyFrom) convCurrencyFrom.addEventListener('change', () => fetchRates(convCurrencyFrom.value));
-  if (convCurrencyTo) convCurrencyTo.addEventListener('change', updateConversion);
-  if (convBtn) convBtn.addEventListener('click', updateConversion);
-  fetchRates('USD');
-
-  // ===== NOTIFICATION DOT =====
-  const notifDot = document.getElementById('dashboardNotifDot');
-  if (localStorage.getItem('demo_new_message') === 'true') {
-    notifDot.style.display = 'block';
-  }
-  setTimeout(() => {
-    localStorage.setItem('demo_new_message', 'true');
-    notifDot.style.display = 'block';
-  }, 3000);
+  rightPanelToggle.addEventListener('click', openRightPanel);
+  rightPanelClose.addEventListener('click', closeRightPanel);
 
   // ===== THEME TOGGLE =====
   const themeBtns = document.querySelectorAll('.theme-btn');
-
-  function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('synergy-theme', theme);
-    themeBtns.forEach(btn => {
-      const isLightBtn = btn.textContent.includes('Light');
-      const shouldBeActive = (theme === 'light' && isLightBtn) || (theme === 'dark' && !isLightBtn);
-      btn.classList.toggle('active', shouldBeActive);
-    });
-  }
-
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-  applyTheme(currentTheme);
-
   themeBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      const isLightBtn = btn.textContent.includes('Light');
-      applyTheme(isLightBtn ? 'light' : 'dark');
+      const isLight = btn.textContent.includes('Light');
+      const theme = isLight ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('synergy-theme', theme);
+      themeBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
     });
   });
 
-  // ===== HANDLE RESIZE: reset drawer states =====
-  window.addEventListener('resize', () => {
-    if (window.innerWidth > 768) {
-      closeSidebar();
+  // Set correct theme button on load
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  if (currentTheme === 'dark') {
+    themeBtns[0].classList.remove('active');
+    themeBtns[1].classList.add('active');
+  }
+
+  // ===== CONVERSION CALCULATOR =====
+  const rates = { USD: 1, EUR: 0.9335, GBP: 0.7921, JPY: 149.52 };
+  const convFrom = document.getElementById('conv-amount-from');
+  const convTo = document.getElementById('conv-amount-to');
+  const currFrom = document.getElementById('conv-currency-from');
+  const currTo = document.getElementById('conv-currency-to');
+  const convResult = document.getElementById('conv-result');
+
+  function updateConversion() {
+    const amount = parseFloat(convFrom.value) || 0;
+    const from = currFrom.value;
+    const to = currTo.value;
+    const inUSD = amount / rates[from];
+    const result = inUSD * rates[to];
+    convTo.value = result.toFixed(2);
+    convResult.textContent = `1 ${from} = ${(rates[to] / rates[from]).toFixed(4)} ${to}`;
+  }
+  convFrom.addEventListener('input', updateConversion);
+  currFrom.addEventListener('change', updateConversion);
+  currTo.addEventListener('change', updateConversion);
+  document.getElementById('conv-btn').addEventListener('click', updateConversion);
+
+  // ===== QUICK TRANSFER =====
+  document.getElementById('quickTransferPerson').addEventListener('click', () => {
+    window.location.href = 'transfer.html';
+  });
+
+  // ===== AUTH CHECK =====
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      window.location.href = 'index.html';
     }
-    if (window.innerWidth > 1024) {
-      closeRightPanel();
+  });
+
+  // ===== LOGOUT =====
+  document.getElementById('logoutLink').addEventListener('click', async (e) => {
+    e.preventDefault();
+    try {
+      await signOut(auth);
+      window.location.href = 'index.html';
+    } catch (err) {
+      console.error('Logout error:', err);
     }
   });
 </script>
+
 </body>
 </html>

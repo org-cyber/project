@@ -37,11 +37,11 @@
     font-size: 20px; font-weight: 700; color: #1a1a1a;
     padding: 0 20px 22px; display: flex; align-items: center; gap: 6px;
   }
-  .logo-icon {
-    width: 22px; height: 22px; background: #7c3aed; border-radius: 5px;
-    display: flex; align-items: center; justify-content: center;
+  .logo img {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
   }
-  .logo-icon svg { width: 12px; height: 12px; fill: white; }
   .sidebar-section-label {
     font-size: 11px; color: #aaa; font-weight: 500;
     padding: 0 20px 8px; letter-spacing: 0.02em;
@@ -49,14 +49,14 @@
   .sidebar-nav { list-style: none; margin-bottom: 18px; }
   .sidebar-nav li a {
     display: flex; align-items: center; gap: 10px;
-    padding: 8px 20px; font-size: 13.5px; color: #555;
+    padding: 11px 20px; font-size: 13.5px; color: #555;
     text-decoration: none; border-radius: 0;
     transition: background 0.15s; cursor: pointer;
   }
   .sidebar-nav li a:hover { background: #f7f7f7; }
   .sidebar-nav li.active a {
-    background: #f4f0ff; color: #7c3aed; font-weight: 500;
-    border-radius: 8px; margin: 0 8px; padding: 8px 12px;
+    background: #fef2f2; color: #ef4444; font-weight: 500;
+    border-radius: 8px; margin: 0 8px; padding: 11px 12px;
   }
   .nav-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
   .active .nav-icon { opacity: 1; }
@@ -143,11 +143,6 @@
     background: none; border: 1.5px solid #e0e0e0;
     border-radius: 8px; padding: 7px 14px; font-size: 13px;
     cursor: pointer; color: #444; font-weight: 500;
-  }
-  .btn-move {
-    background: #7c3aed; border: none; border-radius: 8px;
-    padding: 8px 16px; font-size: 13px; cursor: pointer;
-    color: #fff; font-weight: 500;
   }
   .notif-btn {
     position: relative; background: none; border: none; cursor: pointer;
@@ -358,7 +353,7 @@
   [data-theme="dark"] .conv-input { color: #f4f4f5; }
   [data-theme="dark"] .search-bar input::placeholder,
   [data-theme="dark"] .tx-search input::placeholder { color: #71717a; }
-  [data-theme="dark"] .sidebar-nav li.active a { background: #2e1065; color: #c4b5fd; }
+  [data-theme="dark"] .sidebar-nav li.active a { background: #450a0a; color: #fca5a5; }
   [data-theme="dark"] .sidebar-nav li a:hover { background: #27272a; }
   [data-theme="dark"] .btn-create, 
   [data-theme="dark"] .btn-add-funds, 
@@ -390,7 +385,6 @@
      MOBILE RESPONSIVE BREAKPOINTS
      ========================================= */
 
-  /* Tablet: 768px - 1024px */
   @media (max-width: 1024px) {
     .right-panel {
       width: 240px;
@@ -402,9 +396,7 @@
     }
   }
 
-  /* Mobile: below 768px */
   @media (max-width: 768px) {
-    /* --- Sidebar becomes off-canvas drawer --- */
     .sidebar {
       position: fixed;
       top: 0;
@@ -421,12 +413,10 @@
       box-shadow: 4px 0 24px rgba(0,0,0,0.15);
     }
 
-    /* --- Show hamburger --- */
     .hamburger-btn {
       display: flex;
     }
 
-    /* --- Hide right panel by default, show as slide-up sheet --- */
     .right-panel {
       display: none;
       position: fixed;
@@ -453,7 +443,6 @@
       display: flex;
     }
 
-    /* Sheet drag handle */
     .right-panel::before {
       content: '';
       display: block;
@@ -466,18 +455,15 @@
     }
     [data-theme="dark"] .right-panel::before { background: #52525b; }
 
-    /* Show panel toggle button */
     .mobile-panel-toggle {
       display: flex;
     }
 
-    /* --- Content takes full width --- */
     .content-main {
       padding: 16px;
       gap: 16px;
     }
 
-    /* --- Topbar adjustments --- */
     .topbar {
       padding: 10px 12px;
       gap: 8px;
@@ -488,11 +474,9 @@
       min-width: 0;
     }
 
-    /* --- Page header --- */
     .page-title { font-size: 18px; }
     .page-subtitle { font-size: 12px; }
 
-    /* --- Card padding --- */
     .card {
       padding: 14px;
       border-radius: 10px;
@@ -503,7 +487,6 @@
     }
   }
 
-  /* Small phones: below 480px */
   @media (max-width: 480px) {
     .content-main {
       padding: 12px;
@@ -526,13 +509,11 @@
     .mobile-panel-toggle span.btn-label { display: none; }
   }
 
-  /* Slide-up animation for mobile panel */
   @keyframes slideUp {
     from { transform: translateY(100%); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
   }
 
-  /* Prevent body scroll when sidebar or panel is open on mobile */
   body.sidebar-open,
   body.panel-open {
     overflow: hidden;
@@ -546,17 +527,12 @@
 </head>
 <body>
 
-  <!-- Mobile sidebar overlay -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <div class="sidebar" id="sidebar">
     <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      </div>
-      Fundwise
+      <img src="logo.png" alt="Fundwise">
     </div>
-    <div class="sidebar-section-label">General</div>
     <ul class="sidebar-nav">
       <li><a href="dashboard.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a></li>
       <li><a href="transfer.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Payments</a></li>
@@ -652,7 +628,6 @@
   </div>
 
   <script>
-    // ===== Mobile Sidebar Toggle =====
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -681,7 +656,6 @@
 
     sidebarOverlay.addEventListener('click', closeSidebar);
 
-    // Close sidebar when a nav link is clicked (mobile UX)
     sidebar.querySelectorAll('.sidebar-nav a').forEach(link => {
       link.addEventListener('click', () => {
         if (window.innerWidth <= 768) {
@@ -690,7 +664,6 @@
       });
     });
 
-    // ===== Mobile Right Panel Toggle =====
     const panelToggle = document.getElementById('panelToggle');
     const rightPanel = document.getElementById('rightPanel');
     let panelOverlay = null;
@@ -699,14 +672,12 @@
       rightPanel.classList.add('mobile-visible');
       document.body.classList.add('panel-open');
 
-      // Create overlay for panel
       if (!panelOverlay) {
         panelOverlay = document.createElement('div');
         panelOverlay.className = 'sidebar-overlay';
         panelOverlay.id = 'panelOverlay';
         document.body.appendChild(panelOverlay);
       }
-      // Small delay to allow display:flex to apply before adding visible class
       requestAnimationFrame(() => {
         panelOverlay.classList.add('visible');
       });
@@ -726,30 +697,25 @@
       if (rightPanel.classList.contains('mobile-visible')) {
         closePanel();
       } else {
-        // Close sidebar if open
         closeSidebar();
         openPanel();
       }
     });
 
-    // ===== Handle back button for mobile drawers =====
     window.addEventListener('popstate', () => {
       closeSidebar();
       closePanel();
     });
 
-    // Push state when opening drawers so back button closes them
     function pushDrawerState() {
       if (!window.location.hash || !window.location.hash.startsWith('#drawer')) {
         history.pushState({ drawer: true }, '', '#drawer');
       }
     }
 
-    // Override open functions to push state
     const origOpenSidebar = openSidebar;
     const origOpenPanel = openPanel;
 
-    // Re-bind with history push
     hamburgerBtn.removeEventListener('click', () => {});
     hamburgerBtn.addEventListener('click', () => {
       if (sidebar.classList.contains('open')) {
@@ -772,7 +738,6 @@
       }
     });
 
-    // ===== Handle resize: reset mobile states if going to desktop =====
     let resizeTimer;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
@@ -784,7 +749,6 @@
       }, 150);
     });
 
-    // ===== Theme Toggle Logic =====
     const themeBtns = document.querySelectorAll('.theme-btn');
 
     function applyTheme(theme) {
