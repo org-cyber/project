@@ -24,6 +24,11 @@
     overflow: hidden;
   }
 
+  .main,
+.content,
+.content-main {
+  min-height: 0;
+}
   /* ===== SIDEBAR ===== */
   .sidebar {
     width: 200px;
@@ -1084,7 +1089,6 @@
     <ul class="sidebar-nav">
       <li class="active"><a href="dashboard.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</a></li>
       <li><a href="transfer.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Payments</a></li>
-      <li><a href="add_funds.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Add Funds</a></li>
       <li><a href="trans_details.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Account Statement</a></li>
       <li><a href="pass_change.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Change Password</a></li>
       <li><a href="change_pin.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Change Pin</a></li>
@@ -1147,7 +1151,7 @@
             <div class="balance-amount">$32,352</div>
             <div class="balance-actions">
               <button class="bal-btn">
-                <a href="add_funds.html" class="gg">
+                <a href="transfer.html" class="gg">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
                 Fund Transfer
               </button>
@@ -1392,11 +1396,10 @@
       </div>
     </div><!-- /content -->
   </div><!-- /main -->
-
 <script type="module">
   import { auth, db } from './firebase-config.js';
   import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-  import { doc, getDoc, setDoc, collection, query, where, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+  import { collection, query, where, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
   // ===== MOBILE SIDEBAR DRAWER =====
   const sidebar = document.getElementById('sidebar');
@@ -1415,8 +1418,6 @@
   }
   hamburgerBtn.addEventListener('click', openSidebar);
   sidebarOverlay.addEventListener('click', closeSidebar);
-
-  // Close sidebar when clicking a nav link on mobile
   sidebar.querySelectorAll('.sidebar-nav a').forEach(link => {
     link.addEventListener('click', () => {
       if (window.innerWidth <= 768) closeSidebar();
@@ -1441,68 +1442,138 @@
 
   // ===== THEME TOGGLE =====
   const themeBtns = document.querySelectorAll('.theme-btn');
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('synergy-theme', theme);
+    themeBtns.forEach(btn => {
+      const isLight = btn.textContent.includes('Light');
+      btn.classList.toggle('active', (theme === 'light' && isLight) || (theme === 'dark' && !isLight));
+    });
+  }
+  applyTheme(document.documentElement.getAttribute('data-theme') || 'light');
   themeBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      const isLight = btn.textContent.includes('Light');
-      const theme = isLight ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('synergy-theme', theme);
-      themeBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      applyTheme(btn.textContent.includes('Light') ? 'light' : 'dark');
     });
   });
 
-  // Set correct theme button on load
-  const currentTheme = document.documentElement.getAttribute('data-theme');
-  if (currentTheme === 'dark') {
-    themeBtns[0].classList.remove('active');
-    themeBtns[1].classList.add('active');
-  }
-
-  // ===== CONVERSION CALCULATOR =====
-  const rates = { USD: 1, EUR: 0.9335, GBP: 0.7921, JPY: 149.52 };
-  const convFrom = document.getElementById('conv-amount-from');
-  const convTo = document.getElementById('conv-amount-to');
-  const currFrom = document.getElementById('conv-currency-from');
-  const currTo = document.getElementById('conv-currency-to');
-  const convResult = document.getElementById('conv-result');
-
-  function updateConversion() {
-    const amount = parseFloat(convFrom.value) || 0;
-    const from = currFrom.value;
-    const to = currTo.value;
-    const inUSD = amount / rates[from];
-    const result = inUSD * rates[to];
-    convTo.value = result.toFixed(2);
-    convResult.textContent = `1 ${from} = ${(rates[to] / rates[from]).toFixed(4)} ${to}`;
-  }
-  convFrom.addEventListener('input', updateConversion);
-  currFrom.addEventListener('change', updateConversion);
-  currTo.addEventListener('change', updateConversion);
-  document.getElementById('conv-btn').addEventListener('click', updateConversion);
-
-  // ===== QUICK TRANSFER =====
-  document.getElementById('quickTransferPerson').addEventListener('click', () => {
-    window.location.href = 'transfer.html';
-  });
-
-  // ===== AUTH CHECK =====
-  onAuthStateChanged(auth, (user) => {
+  // ===== AUTH STATE =====
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    unsubscribe();
     if (!user) {
       window.location.href = 'index.html';
+      return;
     }
+    const avatar = document.querySelector('.avatar');
+    if (avatar && user.email) {
+      avatar.textContent = user.email[0].toUpperCase();
+    }
+    loadDashboardTransactions(user.uid);
   });
 
-  // ===== LOGOUT =====
   document.getElementById('logoutLink').addEventListener('click', async (e) => {
     e.preventDefault();
-    try {
-      await signOut(auth);
-      window.location.href = 'index.html';
-    } catch (err) {
-      console.error('Logout error:', err);
-    }
+    await signOut(auth);
+    window.location.href = 'index.html';
   });
+
+  // ===== LIVE TRANSACTIONS =====
+  function loadDashboardTransactions(uid) {
+    const tbody = document.querySelector('.tx-table tbody');
+
+    const q = query(
+      collection(db, "transactions"),
+      where("fromUserId", "==", uid),
+      orderBy("timestamp", "desc"),
+      limit(5)
+    );
+
+    onSnapshot(q, (snapshot) => {
+      tbody.innerHTML = '';
+
+      if (snapshot.empty) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center; padding:50px 20px; color:#bbb; white-space:normal;">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ddd" stroke-width="1.5" style="display:block; margin:0 auto 10px;">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              No transactions yet.
+            </td>
+          </tr>`;
+        return;
+      }
+
+      snapshot.forEach((docSnap) => {
+        const tx = docSnap.data();
+        const row = document.createElement('tr');
+
+        const date = tx.timestamp
+          ? tx.timestamp.toDate().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
+          : '—';
+
+        const invoiceId = 'INV_' + docSnap.id.slice(-8).toUpperCase();
+        const description = tx.reason || ('Transfer to ' + (tx.toName || 'Recipient'));
+        const amount = tx.amount ? tx.amount.toFixed(2) : '0.00';
+
+        const isCompleted = !tx.status || tx.status === 'completed' || tx.status === 'Completed';
+        const statusBadge = isCompleted
+          ? '<span class="badge badge-completed">✓ Completed</span>'
+          : '<span class="badge badge-progress">✦ On Progress</span>';
+
+        row.innerHTML = `
+          <td><span class="checkbox"></span></td>
+          <td>
+            <div class="invoice-cell">
+              <svg class="doc-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              ${invoiceId}
+            </div>
+          </td>
+          <td>
+            <div class="tx-name-cell">
+              <div class="tx-logo" style="background:#ede9fe;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+              </div>
+              <div>
+                <div class="tx-name">${description}</div>
+                <div class="tx-sub">Payment</div>
+              </div>
+            </div>
+          </td>
+          <td style="color:#888; font-size:12.5px;">${date}</td>
+          <td class="amount-neg">-$${amount}</td>
+          <td>${statusBadge}</td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    }, (err) => {
+      console.error('Firestore error:', err);
+      if (err.message && err.message.includes('index')) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="color:#ef4444; text-align:center; padding:20px; white-space:normal;">
+              Firestore composite index required.
+              <a href="${err.message.match(/https:\/\/[^\s]+/)?.[0] || '#'}" target="_blank" style="color:#7c3aed;">Click here to create it</a>,
+              then refresh after 1–2 minutes.
+            </td>
+          </tr>`;
+      } else {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="color:#ef4444; text-align:center; padding:20px; white-space:normal;">
+              Error loading transactions: ${err.message}
+            </td>
+          </tr>`;
+      }
+    });
+  }
 </script>
 
 </body>
