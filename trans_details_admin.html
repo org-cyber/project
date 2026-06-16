@@ -61,7 +61,6 @@ z-index:100;
 transition:transform 0.25s ease;
 }
 .sidebar.open { transform: translateX(0); }
-}
 .sidebar-header {
 padding:0 20px 28px;
 display:flex;
@@ -233,89 +232,6 @@ color:white;
 cursor:pointer;
 }
 .page-content { max-width:960px; }
-.form-card {
-background:var(--bg-white);
-border:1px solid var(--border);
-border-radius:var(--radius-lg);
-padding:28px;
-animation:fadeInUp 0.4s ease;
-}
-.form-header {
-margin-bottom:24px;
-}
-.form-header h2 {
-font-size:16px;
-font-weight:700;
-margin-bottom:4px;
-}
-.form-header p {
-font-size:12px;
-color:var(--text-muted);
-}
-.form-grid {
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-margin-bottom:20px;
-}
-.form-group {
-display:flex;
-flex-direction:column;
-gap:6px;
-}
-.form-group.full-width {
-grid-column:1 / -1;
-}
-.form-label {
-font-size:12px;
-font-weight:600;
-color:var(--text-secondary);
-}
-.form-label .required { color:var(--red); margin-left:2px; }
-.form-input,
-.form-select,
-.form-textarea {
-padding:11px 14px;
-border:1px solid var(--border);
-border-radius:var(--radius-xl);
-font-family:inherit;
-font-size:13px;
-color:var(--text-primary);
-background:var(--bg-white);
-outline:none;
-transition:all 0.15s ease;
-width:100%;
-}
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-border-color:var(--accent);
-box-shadow:0 0 0 3px var(--accent-bg);
-}
-.form-input::placeholder,
-.form-textarea::placeholder { color:var(--text-muted); }
-.form-select {
-appearance:none;
-background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b8b9e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-background-repeat:no-repeat;
-background-position:right 12px center;
-padding-right:36px;
-cursor:pointer;
-}
-.form-textarea {
-min-height:120px;
-resize:vertical;
-}
-.form-actions {
-display:flex;
-align-items:center;
-gap:10px;
-margin-top:8px;
-}
-.btn-lg {
-padding:12px 24px;
-font-size:13px;
-}
 .table-section {
 background:var(--bg-white);
 border:1px solid var(--border);
@@ -389,25 +305,6 @@ justify-content:center;
 .checkbox:hover { border-color:var(--accent); }
 .checkbox.checked { background:var(--accent); border-color:var(--accent); }
 .checkbox.checked svg { width:10px; height:10px; color:white; }
-.invoice-cell { display:flex; align-items:center; gap:10px; }
-.invoice-icon {
-width:32px;
-height:32px;
-border-radius:8px;
-display:flex;
-align-items:center;
-justify-content:center;
-flex-shrink:0;
-}
-.invoice-icon svg { width:16px; height:16px; }
-.invoice-info { display:flex; flex-direction:column; gap:1px; }
-.invoice-id {
-font-family:'JetBrains Mono',monospace;
-font-weight:600;
-color:var(--text-primary);
-font-size:13px;
-}
-.invoice-desc { font-size:11px; color:var(--text-muted); }
 .transaction-cell { display:flex; align-items:center; gap:10px; }
 .transaction-avatar {
 width:32px;
@@ -449,22 +346,6 @@ font-weight:600;
 .status-badge.progress { color:var(--amber); background:var(--amber-bg); }
 .status-badge.suspended { color:var(--red); background:var(--red-bg); }
 .status-badge svg { width:12px; height:12px; }
-.action-btns { display:flex; align-items:center; gap:6px; }
-.action-btn {
-width:28px;
-height:28px;
-border-radius:var(--radius-sm);
-border:1px solid var(--border);
-background:var(--bg-white);
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-transition:all 0.15s ease;
-color:var(--text-secondary);
-}
-.action-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-bg); }
-.action-btn svg { width:14px; height:14px; }
 .table-footer {
 padding:14px 24px;
 display:flex;
@@ -474,24 +355,6 @@ border-top:1px solid var(--border);
 font-size:12px;
 color:var(--text-muted);
 }
-.pagination { display:flex; align-items:center; gap:3px; }
-.page-btn {
-width:28px;
-height:28px;
-border-radius:var(--radius-sm);
-border:1px solid var(--border);
-background:transparent;
-color:var(--text-muted);
-cursor:pointer;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:12px;
-transition:all 0.15s ease;
-font-family:inherit;
-}
-.page-btn:hover { background:var(--border-light); color:var(--text-primary); }
-.page-btn.active { background:var(--accent); border-color:var(--accent); color:white; }
 .empty-state {
 padding:60px 24px;
 text-align:center;
@@ -518,9 +381,6 @@ margin-bottom:4px;
 font-size:12px;
 color:var(--text-muted);
 }
-@media (max-width:1200px) {
-.form-grid { grid-template-columns:1fr; }
-}
 @media (max-width:768px) {
 .app { flex-direction:column; }
 .sidebar {
@@ -542,7 +402,6 @@ box-shadow:16px 0 40px rgba(0,0,0,0.15);
 .search-box { width:100%; }
 .data-table { display:block; overflow-x:auto; min-width:720px; }
 .table-section { overflow-x:auto; }
-.form-grid { grid-template-columns:1fr; }
 }
 @keyframes fadeInUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 </style>
@@ -563,7 +422,7 @@ box-shadow:16px 0 40px rgba(0,0,0,0.15);
 </div>
 <div class="nav-section">
 <nav class="nav-menu">
-<a href="dashboard.html" class="nav-item ">
+<a href="dashboard_admin.html" class="nav-item ">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <rect x="3" y="3" width="7" height="7" rx="1"/>
 <rect x="14" y="3" width="7" height="7" rx="1"/>
@@ -586,7 +445,7 @@ Register User | Account
 </svg>
 Add acct Statement
 </a>
-<a href="trans_details.html" class="nav-item active">
+<a href="trans_details_admin.html" class="nav-item active">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
 <line x1="1" y1="10" x2="23" y2="10"/>
@@ -619,7 +478,7 @@ Update account balance
 </nav>
 </div>
 <div class="sidebar-footer">
-<button class="logout-btn">
+<button class="logout-btn" onclick="alert('Logout clicked')">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
 <polyline points="16 17 21 12 16 7"/>
@@ -632,7 +491,7 @@ Logout
 <div class="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
 <main class="main">
 <div class="top-bar">
-<button class="menu-btn" type="button" onclick="toggleSidebar()" aria-label="Open navigation menu">
+<button class="menu-btn" type="button" onclick="toggleSidebar()" aria-label="Open navigation menu" style="background:none; border:none; cursor:pointer;">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <line x1="4" y1="7" x2="20" y2="7"/>
 <line x1="4" y1="12" x2="20" y2="12"/>
@@ -641,7 +500,7 @@ Logout
 </button>
 <div class="page-title">
 <h1>Transaction Details</h1>
-<p>Review incoming and outgoing wire transfers</p>
+<p>Live feed of all transactions happening on the app</p>
 </div>
 <div class="top-actions">
 <div class="search-box">
@@ -662,7 +521,7 @@ Logout
 </div>
 <div class="table-section">
 <div class="table-header">
-<h2>Wire Transfer Log</h2>
+<h2>Live Transaction Log</h2>
 <div class="table-filters">
 <div class="search-box" style="width:200px; padding:7px 12px;">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;">
@@ -677,12 +536,6 @@ Last 30 days
 <polyline points="6 9 12 15 18 9"/>
 </svg>
 </button>
-<button class="filter-btn">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-</svg>
-Filter
-</button>
 </div>
 </div>
 <table class="data-table">
@@ -690,108 +543,150 @@ Filter
 <tr>
 <th style="width:36px;"><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></th>
 <th>S/N</th>
-<th>Receiver's Bank</th>
-<th>Receiver's Name</th>
-<th>Receiver's Acct Number</th>
-<th>Receiver's Phone No.</th>
-<th>Receiver's Email</th>
-<th>SWIFT / Routing</th>
+<th>Date</th>
+<th>Ref No.</th>
+<th>Account</th>
+<th>Description</th>
+<th>Amount</th>
+<th>Status</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td style="font-family:'JetBrains Mono',monospace; color:var(--text-muted);">1</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#dc2626,#f87171);">TD</div>
-<div class="transaction-info"><span class="transaction-name">TD Canada Trust</span></div>
-</div>
-</td>
-<td>Lunken Logistics</td>
-<td style="font-family:'JetBrains Mono',monospace;">46636466484</td>
-<td style="font-family:'JetBrains Mono',monospace;">0018002255935</td>
-<td style="font-family:'JetBrains Mono',monospace; font-size:12px;">Support@lunkenlogistics.com</td>
-<td style="font-family:'JetBrains Mono',monospace;">TDOMC</td>
-</tr>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td style="font-family:'JetBrains Mono',monospace; color:var(--text-muted);">2</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#dc2626,#f87171);">TD</div>
-<div class="transaction-info"><span class="transaction-name">TD Canada Trust</span></div>
-</div>
-</td>
-<td>LUNKEN LOGISTICS</td>
-<td style="font-family:'JetBrains Mono',monospace;">46636466484</td>
-<td style="font-family:'JetBrains Mono',monospace;">001 800 2255935</td>
-<td style="font-family:'JetBrains Mono',monospace; font-size:12px;">support@lunkenlogistics.com</td>
-<td style="font-family:'JetBrains Mono',monospace;">TDOMC</td>
-</tr>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td style="font-family:'JetBrains Mono',monospace; color:var(--text-muted);">3</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#dc2626,#f87171);">TD</div>
-<div class="transaction-info"><span class="transaction-name">TD Canada Trust</span></div>
-</div>
-</td>
-<td>LUNKEN Logistics</td>
-<td style="font-family:'JetBrains Mono',monospace;">46636466484</td>
-<td style="font-family:'JetBrains Mono',monospace;">0018002255935</td>
-<td style="font-family:'JetBrains Mono',monospace; font-size:12px;">Sypport@lunkenlogistics.com</td>
-<td style="font-family:'JetBrains Mono',monospace;">TDOMC</td>
-</tr>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td style="font-family:'JetBrains Mono',monospace; color:var(--text-muted);">4</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#2563eb,#60a5fa);">CB</div>
-<div class="transaction-info"><span class="transaction-name">Chase Bank</span></div>
-</div>
-</td>
-<td>Lunken</td>
-<td style="font-family:'JetBrains Mono',monospace;">910181902</td>
-<td style="font-family:'JetBrains Mono',monospace;">14085632180</td>
-<td style="font-family:'JetBrains Mono',monospace; font-size:12px;">Chasebank701@gmail.com</td>
-<td style="font-family:'JetBrains Mono',monospace; color:var(--text-muted);">—</td>
-</tr>
+  <!-- Rows will be injected here by Firebase -->
+  <tr>
+    <td colspan="8" class="empty-state">
+      <div class="empty-state-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+          <line x1="1" y1="10" x2="23" y2="10"></line>
+        </svg>
+      </div>
+      <h3>Connecting to Firestore...</h3>
+      <p>Fetching live transaction data.</p>
+    </td>
+  </tr>
 </tbody>
 </table>
 <div class="table-footer">
-<span>Showing 4 of 403 transactions</span>
-<div class="pagination">
-<button class="page-btn">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<polyline points="15 18 9 12 15 6"/>
-</svg>
-</button>
-<button class="page-btn active">1</button>
-<button class="page-btn">2</button>
-<button class="page-btn">3</button>
-<button class="page-btn">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<polyline points="9 18 15 12 9 6"/>
-</svg>
-</button>
-</div>
+<span>Showing 0 transactions</span>
 </div>
 </div>
 </main>
 </div>
+
 <script>
 function toggleSidebar(force) {
   var sidebar = document.querySelector('.sidebar');
   var backdrop = document.querySelector('.sidebar-backdrop');
   var open = typeof force === 'boolean' ? force : !sidebar.classList.contains('open');
   sidebar.classList.toggle('open', open);
-  backdrop.classList.toggle('visible', open);
+  backdrop.style.display = open ? 'block' : 'none';
 }
 
 function toggleCheckbox(el) { el.classList.toggle('checked'); }
+</script>
+
+<script type="module">
+  import { auth, db } from './firebase-config.js';
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+  import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+  // Ensure admin is logged in
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      // window.location.href = 'index.html'; // Uncomment to enforce login
+      return;
+    }
+    loadAllTransactions();
+  });
+
+  function loadAllTransactions() {
+    const tbody = document.querySelector('.data-table tbody');
+    const footerSpan = document.querySelector('.table-footer span');
+    
+    // Fetch ALL transactions across the app, ordered by newest first
+    const q = query(collection(db, "transactions"), orderBy("timestamp", "desc"));
+
+    onSnapshot(q, (snapshot) => {
+      tbody.innerHTML = '';
+      
+      if (snapshot.empty) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="empty-state">
+              <div class="empty-state-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                  <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+              </div>
+              <h3>No transactions yet</h3>
+              <p>Transactions will appear here in real-time.</p>
+            </td>
+          </tr>`;
+        if(footerSpan) footerSpan.textContent = `Showing 0 transactions`;
+        return;
+      }
+      
+      let serial = 1;
+      snapshot.forEach((docSnap) => {
+        const tx = docSnap.data();
+        
+        // Format Data
+        const date = tx.timestamp 
+          ? tx.timestamp.toDate().toLocaleDateString('en-US', {day:'numeric', month:'short', year:'numeric'}) 
+          : '—';
+        const ref = 'TRX-' + docSnap.id.slice(-6).toUpperCase();
+        const sender = tx.fromUserId ? tx.fromUserId.substring(0, 10) + '...' : 'Unknown';
+        const receiver = tx.toName || 'Recipient';
+        const desc = tx.reason || 'Transfer';
+        const amount = tx.amount ? parseFloat(tx.amount).toFixed(2) : '0.00';
+        
+        // Map Status
+        let statusClass = 'progress';
+        let statusText = 'On Progress';
+        if (tx.status === 'completed' || tx.status === 'Completed') {
+          statusClass = 'completed';
+          statusText = 'Completed';
+        } else if (tx.status === 'suspended' || tx.status === 'Suspended') {
+          statusClass = 'suspended';
+          statusText = 'Suspended';
+        }
+
+        // Build Row
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
+          <td style="font-family:'JetBrains Mono',monospace; color:var(--text-muted);">${serial++}</td>
+          <td class="date-cell">${date}</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:var(--text-primary); font-size:12px;">${ref}</td>
+          <td>
+            <div class="transaction-cell">
+              <div class="transaction-avatar" style="background:linear-gradient(135deg,#4f46e5,#6366f1);">${receiver.charAt(0).toUpperCase()}</div>
+              <div class="transaction-info">
+                <span class="transaction-name">${receiver}</span>
+                <span class="transaction-email">From: ${sender}</span>
+              </div>
+            </div>
+          </td>
+          <td style="color:var(--text-secondary); font-size:13px;">${desc}</td>
+          <td class="amount-cell negative">-$${amount}</td>
+          <td><span class="status-badge ${statusClass}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${statusText}</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+      
+      if(footerSpan) footerSpan.textContent = `Showing ${snapshot.size} transactions`;
+    }, (err) => {
+      console.error('Firestore error:', err);
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" style="color:var(--red); text-align:center; padding:20px;">
+            Error loading transactions: ${err.message}
+          </td>
+        </tr>`;
+    });
+  }
 </script>
 </body>
 </html>
