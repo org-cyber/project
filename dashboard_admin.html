@@ -663,6 +663,9 @@ letter-spacing:-0.5px;
 margin-bottom:8px;
 position:relative;
 z-index:1;
+display:flex;
+align-items:center;
+gap:10px;
 }
 
 .metric-card-dark-sub {
@@ -1068,7 +1071,7 @@ box-shadow:16px 0 40px rgba(0,0,0,0.15);
 </svg>
 Dashboard
 </a>
-<a href="index.html" class="nav-item">
+<a href="register.html" class="nav-item">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
 <circle cx="12" cy="7" r="4"/>
@@ -1112,9 +1115,6 @@ Update account status
 </svg>
 Update account balance
 </a>
-
-
-
 <a href="admin_chat.html" class="nav-item">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -1124,7 +1124,6 @@ Update account balance
 </svg>
 Chat / Support ...
 </a>
-
 </nav>
 </div>
 <div class="sidebar-footer">
@@ -1175,8 +1174,8 @@ Logout
 <div class="metrics-row">
 <div class="metrics-section">
 <h2>System Overview</h2>
-<div class="metrics-value">88 Accounts</div>
-<div class="metrics-sub">33 Live &middot; 55 Suspended &middot; 403 Total Transactions</div>
+<div class="metrics-value"><span id="totalAccounts">0</span> Accounts</div>
+<div class="metrics-sub"><span id="liveCount">0</span> Live &middot; <span id="suspendedCount">0</span> Suspended &middot; <span id="totalTx">0</span> Total Transactions</div>
 <div class="metrics-actions">
 <button class="metrics-action">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1201,54 +1200,20 @@ Download
 </button>
 </div>
 </div>
-<div class="quick-actions">
+<div class="quick-actions" id="quickActionsContainer">
 <div class="quick-action">
-<button class="quick-action-btn">
+<a href="register.html" class="quick-action-btn" style="text-decoration:none; display:flex; align-items:center; justify-content:center; width:100%; height:100%;">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <circle cx="12" cy="12" r="10"/>
 <line x1="12" y1="8" x2="12" y2="16"/>
 <line x1="8" y1="12" x2="16" y2="12"/>
 </svg>
 <span class="plus">+</span>
-</button>
+</a>
 <div class="quick-action-label">New User</div>
 <div class="quick-action-sub">Register</div>
 </div>
-<div class="quick-action">
-<div class="quick-action-btn" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">
-<img src="https://ui-avatars.com/api/?name=Holland+Patrick&amp;background=7c3aed&amp;color=fff&amp;size=48&amp;font-size=0.4&amp;length=2" alt="HP" class="quick-action-avatar">
-</div>
-<div class="quick-action-label">Holland</div>
-<div class="quick-action-sub">$1,237k</div>
-</div>
-<div class="quick-action">
-<div class="quick-action-btn" style="background:linear-gradient(135deg,#059669,#34d399);">
-<img src="https://ui-avatars.com/api/?name=Soren+Patrick&amp;background=059669&amp;color=fff&amp;size=48&amp;font-size=0.4&amp;length=2" alt="SP" class="quick-action-avatar">
-</div>
-<div class="quick-action-label">Soren</div>
-<div class="quick-action-sub">$1,103k</div>
-</div>
-<div class="quick-action">
-<div class="quick-action-btn" style="background:linear-gradient(135deg,#dc2626,#f87171);">
-<img src="https://ui-avatars.com/api/?name=James+Mitchell&amp;background=dc2626&amp;color=fff&amp;size=48&amp;font-size=0.4&amp;length=2" alt="JM" class="quick-action-avatar">
-</div>
-<div class="quick-action-label">James</div>
-<div class="quick-action-sub">$892k</div>
-</div>
-<div class="quick-action">
-<div class="quick-action-btn" style="background:linear-gradient(135deg,#0891b2,#22d3ee);">
-<img src="https://ui-avatars.com/api/?name=Emma+Watson&amp;background=0891b2&amp;color=fff&amp;size=48&amp;font-size=0.4&amp;length=2" alt="EW" class="quick-action-avatar">
-</div>
-<div class="quick-action-label">Emma</div>
-<div class="quick-action-sub">$756k</div>
-</div>
-<div class="quick-action">
-<div class="quick-action-btn" style="background:linear-gradient(135deg,#c2410c,#fb923c);">
-<img src="https://ui-avatars.com/api/?name=Robert+Lang&amp;background=c2410c&amp;color=fff&amp;size=48&amp;font-size=0.4&amp;length=2" alt="RL" class="quick-action-avatar">
-</div>
-<div class="quick-action-label">Robert</div>
-<div class="quick-action-sub">$645k</div>
-</div>
+<!-- JS will inject top 5 users here -->
 <button class="quick-action-nav">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <polyline points="9 18 15 12 9 6"/>
@@ -1270,12 +1235,12 @@ Last 30 days
 </div>
 </div>
 <div class="stat-card-value">
-33
+<span id="metricLive">0</span>
 <span class="stat-card-trend up">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
 </svg>
-2.3%
+Live
 </span>
 </div>
 <div class="stat-chart">
@@ -1304,12 +1269,12 @@ Last 30 days
 </div>
 </div>
 <div class="stat-card-value">
-55
+<span id="metricSuspended">0</span>
 <span class="stat-card-trend down">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
 </svg>
-2.3%
+Blocked
 </span>
 </div>
 <div class="stat-chart">
@@ -1350,28 +1315,28 @@ View All
 </div>
 </div>
 <div class="metric-card-dark-value">
-403
+<span id="metricTx">0</span>
 <span class="metric-card-dark-trend">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
 </svg>
-+8%
+Total
 </span>
 </div>
-<div class="metric-card-dark-sub">vs 372 last month</div>
+<div class="metric-card-dark-sub">All time processed transactions</div>
 </div>
 </div>
 <div class="profit-card">
 <div class="profit-header">
-<div class="profit-title">Total Profit</div>
-<div class="profit-period">This Month</div>
+<div class="profit-title">Total System Balance</div>
+<div class="profit-period">Live Accounts</div>
 </div>
-<div class="profit-value">$124,580</div>
+<div class="profit-value">$<span id="totalProfit">0</span></div>
 <div class="profit-trend">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
 </svg>
-+12.4% from last month
+Total value held
 </div>
 <div class="profit-chart">
 <div class="profit-bar" style="height:30%"></div>
@@ -1479,192 +1444,13 @@ Filter
 <th>Status</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td>
-<div class="invoice-cell">
-<div class="invoice-icon" style="background:rgba(5,150,105,0.08);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-<div class="invoice-info"><span class="invoice-id">INV_00092323</span><span class="invoice-desc">Account Registration</span></div>
-</div>
-</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">HP</div>
-<div class="transaction-info"><span class="transaction-name">Holland Patrick</span><span class="transaction-email">5501622201</span></div>
-</div>
-</td>
-<td class="date-cell">11 Nov, 2023</td>
-<td class="amount-cell positive">+$1,237,240</td>
-<td><span class="status-badge completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Live</span></td>
-</tr>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td>
-<div class="invoice-cell">
-<div class="invoice-icon" style="background:rgba(5,150,105,0.08);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-<div class="invoice-info"><span class="invoice-id">INV_00092324</span><span class="invoice-desc">Account Registration</span></div>
-</div>
-</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#059669,#34d399);">SP</div>
-<div class="transaction-info"><span class="transaction-name">Soren Patrick</span><span class="transaction-email">5501718723</span></div>
-</div>
-</td>
-<td class="date-cell">11 Nov, 2023</td>
-<td class="amount-cell positive">+$1,103,705</td>
-<td><span class="status-badge completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Live</span></td>
-</tr>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td>
-<div class="invoice-cell">
-<div class="invoice-icon" style="background:rgba(37,99,235,0.08);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--blue);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-<div class="invoice-info"><span class="invoice-id">INV_00092325</span><span class="invoice-desc">Account Registration</span></div>
-</div>
-</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#dc2626,#f87171);">JM</div>
-<div class="transaction-info"><span class="transaction-name">James Mitchell</span><span class="transaction-email">5501983421</span></div>
-</div>
-</td>
-<td class="date-cell">11 Nov, 2023</td>
-<td class="amount-cell positive">+$892,450</td>
-<td><span class="status-badge progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>On Progress</span></td>
-</tr>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td>
-<div class="invoice-cell">
-<div class="invoice-icon" style="background:rgba(5,150,105,0.08);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-<div class="invoice-info"><span class="invoice-id">INV_00092326</span><span class="invoice-desc">Account Registration</span></div>
-</div>
-</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#0891b2,#22d3ee);">EW</div>
-<div class="transaction-info"><span class="transaction-name">Emma Watson</span><span class="transaction-email">5502039187</span></div>
-</div>
-</td>
-<td class="date-cell">11 Nov, 2023</td>
-<td class="amount-cell positive">+$756,320</td>
-<td><span class="status-badge completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Live</span></td>
-</tr>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td>
-<div class="invoice-cell">
-<div class="invoice-icon" style="background:rgba(220,38,38,0.08);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-<div class="invoice-info"><span class="invoice-id">INV_00092327</span><span class="invoice-desc">Account Suspended</span></div>
-</div>
-</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#c2410c,#fb923c);">RL</div>
-<div class="transaction-info"><span class="transaction-name">Robert Lang</span><span class="transaction-email">5502156743</span></div>
-</div>
-</td>
-<td class="date-cell">11 Nov, 2023</td>
-<td class="amount-cell negative">-$645,100</td>
-<td><span class="status-badge suspended"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Suspended</span></td>
-</tr>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td>
-<div class="invoice-cell">
-<div class="invoice-icon" style="background:rgba(5,150,105,0.08);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-<div class="invoice-info"><span class="invoice-id">INV_00092328</span><span class="invoice-desc">Account Registration</span></div>
-</div>
-</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#4d7c0f,#a3e635);">SC</div>
-<div class="transaction-info"><span class="transaction-name">Sarah Chen</span><span class="transaction-email">5502289012</span></div>
-</div>
-</td>
-<td class="date-cell">11 Nov, 2023</td>
-<td class="amount-cell positive">+$534,890</td>
-<td><span class="status-badge completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Live</span></td>
-</tr>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td>
-<div class="invoice-cell">
-<div class="invoice-icon" style="background:rgba(5,150,105,0.08);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-<div class="invoice-info"><span class="invoice-id">INV_00092329</span><span class="invoice-desc">Account Registration</span></div>
-</div>
-</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#be185d,#f472b6);">DK</div>
-<div class="transaction-info"><span class="transaction-name">David Kim</span><span class="transaction-email">5502345678</span></div>
-</div>
-</td>
-<td class="date-cell">11 Nov, 2023</td>
-<td class="amount-cell positive">+$423,670</td>
-<td><span class="status-badge completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Live</span></td>
-</tr>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td>
-<div class="invoice-cell">
-<div class="invoice-icon" style="background:rgba(220,38,38,0.08);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--red);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-<div class="invoice-info"><span class="invoice-id">INV_00092330</span><span class="invoice-desc">Account Suspended</span></div>
-</div>
-</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#4338ca,#818cf8);">LN</div>
-<div class="transaction-info"><span class="transaction-name">Lisa Nguyen</span><span class="transaction-email">5502412345</span></div>
-</div>
-</td>
-<td class="date-cell">11 Nov, 2023</td>
-<td class="amount-cell negative">-$312,450</td>
-<td><span class="status-badge suspended"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Suspended</span></td>
-</tr>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td>
-<div class="invoice-cell">
-<div class="invoice-icon" style="background:rgba(5,150,105,0.08);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-<div class="invoice-info"><span class="invoice-id">INV_00092331</span><span class="invoice-desc">Account Registration</span></div>
-</div>
-</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#0e7490,#67e8f9);">MR</div>
-<div class="transaction-info"><span class="transaction-name">Michael Ross</span><span class="transaction-email">5502567890</span></div>
-</div>
-</td>
-<td class="date-cell">11 Nov, 2023</td>
-<td class="amount-cell positive">+$201,230</td>
-<td><span class="status-badge completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Live</span></td>
-</tr>
-<tr>
-<td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
-<td>
-<div class="invoice-cell">
-<div class="invoice-icon" style="background:rgba(5,150,105,0.08);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-<div class="invoice-info"><span class="invoice-id">INV_00092332</span><span class="invoice-desc">Account Registration</span></div>
-</div>
-</td>
-<td>
-<div class="transaction-cell">
-<div class="transaction-avatar" style="background:linear-gradient(135deg,#a16207,#facc15);">AP</div>
-<div class="transaction-info"><span class="transaction-name">Anna Petrova</span><span class="transaction-email">5502634567</span></div>
-</div>
-</td>
-<td class="date-cell">11 Nov, 2023</td>
-<td class="amount-cell positive">+$145,800</td>
-<td><span class="status-badge completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Live</span></td>
-</tr>
+<tbody id="recentUsersTbody">
+<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">Loading users...</td></tr>
 </tbody>
 </table>
 
 <div class="table-footer">
-<span>Showing 10 of 88 accounts</span>
+<span>Showing <span id="tableCount">0</span> of <span id="tableTotal">0</span> accounts</span>
 <div class="pagination">
 <button class="page-btn">
 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1672,15 +1458,6 @@ Filter
 </svg>
 </button>
 <button class="page-btn active">1</button>
-<button class="page-btn">2</button>
-<button class="page-btn">3</button>
-<button class="page-btn">4</button>
-<button class="page-btn">5</button>
-<button class="page-btn">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<polyline points="9 18 15 12 9 6"/>
-</svg>
-</button>
 </div>
 </div>
 </div>
@@ -1698,6 +1475,174 @@ function toggleSidebar(force) {
 
 function toggleCheckbox(el) { el.classList.toggle('checked'); }
 </script>
+
+<script type="module">
+  // ===== FIRESTORE LOGIC =====
+  import { auth, db } from './firebase-config.js';
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+  import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) { window.location.href = 'index.html'; return; }
+    loadAdminMetrics();
+  });
+
+  function loadAdminMetrics() {
+    // 1. Listen to ALL users for metrics, top users, and recent users
+    onSnapshot(collection(db, "users"), (usersSnap) => {
+      let totalAccounts = usersSnap.size;
+      let liveCount = 0;
+      let suspendedCount = 0;
+      let totalProfit = 0;
+      let usersList = [];
+
+      usersSnap.forEach(doc => {
+        const data = doc.data();
+        usersList.push({ id: doc.id, ...data });
+        if (data.status === 'Live') liveCount++;
+        else if (data.status === 'Suspended') suspendedCount++;
+        totalProfit += parseFloat(data.balance || 0);
+      });
+
+      // Update System Overview
+      document.getElementById('totalAccounts').textContent = totalAccounts;
+      document.getElementById('liveCount').textContent = liveCount;
+      document.getElementById('suspendedCount').textContent = suspendedCount;
+      
+      // Update Stat Cards
+      document.getElementById('metricLive').textContent = liveCount;
+      document.getElementById('metricSuspended').textContent = suspendedCount;
+      
+      // Update Profit / Total Balance
+      document.getElementById('totalProfit').textContent = totalProfit.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+
+      // Top 5 Users by Balance (Quick Actions)
+      const topUsers = usersList.sort((a, b) => (b.balance || 0) - (a.balance || 0)).slice(0, 5);
+      const quickActionsContainer = document.getElementById('quickActionsContainer');
+      
+      // Keep the first child (New User) and last child (Nav button), clear the rest
+      const newUserBtn = quickActionsContainer.children[0].outerHTML;
+      const navBtn = quickActionsContainer.children[quickActionsContainer.children.length - 1].outerHTML;
+      quickActionsContainer.innerHTML = newUserBtn;
+
+      const colors = ['#7c3aed', '#059669', '#dc2626', '#0891b2', '#c2410c'];
+      topUsers.forEach((u, index) => {
+        const name = `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Unknown';
+        const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const balanceK = Math.round((u.balance || 0) / 1000);
+        const color = colors[index % colors.length];
+        const encodedName = encodeURIComponent(name);
+        
+        const userHtml = `
+          <div class="quick-action">
+            <div class="quick-action-btn" style="background:linear-gradient(135deg,${color},${color}cc);">
+              <img src="https://ui-avatars.com/api/?name=${encodedName}&background=${color.substring(1)}&color=fff&size=48&font-size=0.4&length=2" alt="${initials}" class="quick-action-avatar">
+            </div>
+            <div class="quick-action-label">${name.split(' ')[0]}</div>
+            <div class="quick-action-sub">$${balanceK}k</div>
+          </div>
+        `;
+        quickActionsContainer.insertAdjacentHTML('beforeend', userHtml);
+      });
+      quickActionsContainer.insertAdjacentHTML('beforeend', navBtn);
+
+      // Last Registered Users Table
+      const recentUsers = usersList.sort((a, b) => {
+        const tA = a.createdAt?.toMillis() || 0;
+        const tB = b.createdAt?.toMillis() || 0;
+        return tB - tA;
+      }).slice(0, 10);
+      
+      const tbody = document.getElementById('recentUsersTbody');
+      tbody.innerHTML = '';
+      
+      if (recentUsers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">No users registered yet.</td></tr>';
+        document.getElementById('tableCount').textContent = '0';
+        document.getElementById('tableTotal').textContent = '0';
+        return;
+      }
+
+      document.getElementById('tableCount').textContent = recentUsers.length;
+      document.getElementById('tableTotal').textContent = totalAccounts;
+
+      const gradients = [
+        'linear-gradient(135deg,#7c3aed,#a78bfa)', 'linear-gradient(135deg,#059669,#34d399)',
+        'linear-gradient(135deg,#dc2626,#f87171)', 'linear-gradient(135deg,#0891b2,#22d3ee)',
+        'linear-gradient(135deg,#c2410c,#fb923c)', 'linear-gradient(135deg,#4d7c0f,#a3e635)',
+        'linear-gradient(135deg,#be185d,#f472b6)', 'linear-gradient(135deg,#4338ca,#818cf8)',
+        'linear-gradient(135deg,#0e7490,#67e8f9)', 'linear-gradient(135deg,#a16207,#facc15)'
+      ];
+
+      recentUsers.forEach(u => {
+        const name = `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Unknown';
+        const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const accNo = u.accountNumber || '—';
+        const date = u.createdAt ? u.createdAt.toDate().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+        const balance = u.balance ? parseFloat(u.balance).toLocaleString('en-US', {style: 'currency', currency: 'USD', minimumFractionDigits: 0}) : '$0';
+        const status = u.status || 'On Progress';
+        
+        let statusClass = 'progress';
+        let statusIcon = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
+        if (status === 'Live') {
+          statusClass = 'completed';
+          statusIcon = '<polyline points="20 6 9 17 4 12"/>';
+        } else if (status === 'Suspended') {
+          statusClass = 'suspended';
+          statusIcon = '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>';
+        }
+
+        const invoiceId = 'INV_' + u.id.slice(-8).toUpperCase();
+        const desc = status === 'Suspended' ? 'Account Suspended' : 'Account Registration';
+        
+        let iconBg = 'rgba(5,150,105,0.08)';
+        let iconColor = 'var(--green)';
+        if (status === 'Suspended') {
+          iconBg = 'rgba(220,38,38,0.08)';
+          iconColor = 'var(--red)';
+        } else if (status !== 'Live') {
+          iconBg = 'rgba(37,99,235,0.08)';
+          iconColor = 'var(--blue)';
+        }
+
+        const randomGrad = gradients[Math.floor(Math.random() * gradients.length)];
+        const balanceClass = status === 'Suspended' ? 'negative' : 'positive';
+        const balancePrefix = status === 'Suspended' ? '-' : '+';
+
+        tbody.innerHTML += `
+          <tr>
+            <td><div class="checkbox" onclick="toggleCheckbox(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></td>
+            <td>
+              <div class="invoice-cell">
+                <div class="invoice-icon" style="background:${iconBg};"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:${iconColor};"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="invoice-info"><span class="invoice-id">${invoiceId}</span><span class="invoice-desc">${desc}</span></div>
+              </div>
+            </td>
+            <td>
+              <div class="transaction-cell">
+                <div class="transaction-avatar" style="background:${randomGrad};">${initials}</div>
+                <div class="transaction-info"><span class="transaction-name">${name}</span><span class="transaction-email">${accNo}</span></div>
+              </div>
+            </td>
+            <td class="date-cell">${date}</td>
+            <td class="amount-cell ${balanceClass}">${balancePrefix}${balance}</td>
+            <td><span class="status-badge ${statusClass}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${statusIcon}</svg>${status}</span></td>
+          </tr>
+        `;
+      });
+    }, (err) => {
+      console.error("Error listening to users:", err);
+    });
+
+    // 2. Listen to ALL transactions for total count
+    onSnapshot(collection(db, "transactions"), (txSnap) => {
+      const totalTx = txSnap.size;
+      document.getElementById('totalTx').textContent = totalTx;
+      document.getElementById('metricTx').textContent = totalTx;
+    }, (err) => {
+      console.error("Error listening to transactions:", err);
+    });
+  }
+</script>
 </body>
 </html>
-
