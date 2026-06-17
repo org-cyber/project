@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Synergy Trust Bank — Admin Sign In</title>
+<title>Synergy Trust Bank — Sign In</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -181,33 +181,6 @@ max-width:260px;
 .brand-bottom {
 position:relative;
 z-index:1;
-}
-.brand-stat {
-display:flex;
-align-items:center;
-gap:10px;
-margin-bottom:16px;
-}
-.brand-stat-icon {
-width:36px; height:36px;
-border-radius:10px;
-background:rgba(255,255,255,0.06);
-display:flex;
-align-items:center;
-justify-content:center;
-}
-.brand-stat-icon svg { width:18px; height:18px; color:#ffffff; }
-.brand-stat-info { display:flex; flex-direction:column; }
-.brand-stat-val {
-font-family:'JetBrains Mono',monospace;
-font-size:18px;
-font-weight:600;
-color:#ffffff;
-}
-.brand-stat-label {
-font-size:11px;
-color:var(--text-sidebar);
-margin-top:1px;
 }
 .brand-footer {
 font-size:11px;
@@ -431,45 +404,12 @@ to { opacity:1; transform:translateY(0); }
 <div class="brand-panel">
 <div class="brand-top">
 <div class="brand-logo">
-<div class="brand-logo-icon">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-<path d="M12 2L2 7l10 5 10-5-10-5z"/>
-<path d="M2 17l10 5 10-5"/>
-<path d="M2 12l10 5 10-5"/>
-</svg>
+<img src="logo.png" alt="Synergy" style="height: 32px; width: auto; object-fit: contain; border-radius: 6px;">
 </div>
-<div class="brand-logo-text">Synergy</div>
-</div>
-<h1 class="brand-headline">Secure Admin<br>Access Portal</h1>
-<p class="brand-sub">Authorized personnel only. Monitor accounts, manage transactions, and oversee system operations.</p>
+<h1 class="brand-headline">Secure Access<br>Portal</h1>
+<p class="brand-sub">Welcome to Synergy Trust Bank. Please enter your credentials to access your account or the admin dashboard.</p>
 </div>
 <div class="brand-bottom">
-<div class="brand-stat">
-<div class="brand-stat-icon">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<rect x="3" y="3" width="7" height="7" rx="1"/>
-<rect x="14" y="3" width="7" height="7" rx="1"/>
-<rect x="14" y="14" width="7" height="7" rx="1"/>
-<rect x="3" y="14" width="7" height="7" rx="1"/>
-</svg>
-</div>
-<div class="brand-stat-info">
-<span class="brand-stat-val">88 Accounts</span>
-<span class="brand-stat-label">Active system registry</span>
-</div>
-</div>
-<div class="brand-stat">
-<div class="brand-stat-icon">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-<line x1="1" y1="10" x2="23" y2="10"/>
-</svg>
-</div>
-<div class="brand-stat-info">
-<span class="brand-stat-val">403 Transactions</span>
-<span class="brand-stat-label">Processed this month</span>
-</div>
-</div>
 <div class="brand-footer">© 2026 Synergy Trust Bank. All rights reserved.</div>
 </div>
 </div>
@@ -477,19 +417,32 @@ to { opacity:1; transform:translateY(0); }
 <div class="form-panel">
 <div class="form-panel-header">
 <h2>Welcome back</h2>
-<p>Enter your admin credentials to access the dashboard.</p>
+<p>Enter your credentials to continue.</p>
 </div>
 <form id="loginForm" autocomplete="off">
 <div class="input-group">
-<div class="input-label"><span>email</span></div>
+<div class="input-label"><span>Email Address</span></div>
 <div class="input-wrap">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
 <circle cx="12" cy="7" r="4"/>
 </svg>
-<input type="email" id="email" placeholder="Enter email" autocomplete="off">
+<input type="email" id="email" placeholder="Enter email" autocomplete="off" required>
 </div>
 </div>
+
+<!-- Account Number Field (Hidden for Admin) -->
+<div class="input-group" id="accNoGroup">
+<div class="input-label"><span>Account Number</span></div>
+<div class="input-wrap">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="2" y="5" width="20" height="14" rx="2"/>
+<line x1="2" y1="10" x2="22" y2="10"/>
+</svg>
+<input type="text" id="accountNumber" placeholder="Enter account number" autocomplete="off" inputmode="numeric" required>
+</div>
+</div>
+
 <div class="input-group">
 <div class="input-label">
 <span>Password</span>
@@ -500,7 +453,7 @@ to { opacity:1; transform:translateY(0); }
 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
 </svg>
-<input type="password" id="password" placeholder="Enter password">
+<input type="password" id="password" placeholder="Enter password" required>
 <button type="button" class="pw-toggle" onclick="togglePw()" tabindex="-1">
 <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -515,7 +468,7 @@ to { opacity:1; transform:translateY(0); }
 <span>Remember this device</span>
 </label>
 </div>
-<button type="submit" class="submit-btn">
+<button type="submit" class="submit-btn" id="submitBtn">
 Sign In
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 <polyline points="9 18 15 12 9 6"/>
@@ -527,7 +480,7 @@ Sign In
 <line x1="15" y1="9" x2="9" y2="15"/>
 <line x1="9" y1="9" x2="15" y2="15"/>
 </svg>
-Invalid email or password. Please try again.
+Invalid credentials. Please try again.
 </div>
 </form>
 <div class="form-footer">
@@ -536,43 +489,117 @@ Need help? <a href="#">Contact system administrator</a>
 </div>
 </div>
 </div>
+
+<script>
+function togglePw() {
+  const pw = document.getElementById('password');
+  const icon = document.getElementById('eyeIcon');
+  if (pw.type === 'password') {
+    pw.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    pw.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+</script>
+
 <script type="module">
-  import { auth } from './firebase-config.js';
+  import { auth, db } from './firebase-config.js';
   import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+  import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
   // CHANGE THIS TO YOUR ACTUAL ADMIN EMAIL
-  const ADMIN_EMAIL = 'admin@synergy.com';
+  const ADMIN_EMAIL = 'admin@synergy.com'; 
 
   const form = document.getElementById('loginForm');
   const emailInput = document.getElementById('email');
   const passwordInput = document.getElementById('password');
+  const accNoInput = document.getElementById('accountNumber');
+  const accNoGroup = document.getElementById('accNoGroup');
   const errorMsg = document.getElementById('errorMsg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  // Smart UX: Hide Account Number field if Admin email is entered
+  emailInput.addEventListener('input', () => {
+    const isAdm = emailInput.value.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase();
+    accNoGroup.style.display = isAdm ? 'none' : 'block';
+    if (isAdm) {
+      accNoInput.removeAttribute('required');
+    } else {
+      accNoInput.setAttribute('required', 'true');
+    }
+  });
+
+  function showError(msg) {
+    errorMsg.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ${msg}`;
+    errorMsg.classList.add('show');
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
+    const accNo = accNoInput.value.trim();
     errorMsg.classList.remove('show');
 
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      const user = auth.currentUser;
+    submitBtn.classList.add('loading');
+    submitBtn.innerHTML = `Signing in... <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
 
-      // Redirect based on role
-      if (user.email === ADMIN_EMAIL) {
-        window.location.href = 'admin_chat.html';
+    try {
+      if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+        // --- ADMIN LOGIN ---
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = 'dashboard_admin.html';
       } else {
+        // --- USER LOGIN ---
+        if (!accNo) {
+          showError("Please enter your account number.");
+          throw new Error("Missing account number");
+        }
+
+        // 1. Verify account number exists in Firestore
+        const q = query(collection(db, "users"), where("accountNumber", "==", accNo));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          showError("Invalid account number.");
+          throw new Error("Invalid account number");
+        }
+
+        const userData = querySnapshot.docs[0].data();
+        
+        // 2. Verify the email matches the account number
+        if (userData.email.toLowerCase() !== email.toLowerCase()) {
+          showError("Email does not match the provided account number.");
+          throw new Error("Email mismatch");
+        }
+        
+        // 3. Check if account is suspended
+        if (userData.status === 'Suspended') {
+          showError("Your account has been suspended. Please contact support.");
+          throw new Error("Account suspended");
+        }
+
+        // 4. If all checks pass, authenticate with Firebase Auth
+        await signInWithEmailAndPassword(auth, email, password);
         window.location.href = 'dashboard.html';
       }
     } catch (err) {
-      console.error('Firebase auth error:', err.code, err.message);
-      let friendly = 'Invalid email or password. Please try again.';
-      if (err.code === 'auth/user-not-found') friendly = 'No account found with this email.';
-      if (err.code === 'auth/wrong-password') friendly = 'Incorrect password.';
-      if (err.code === 'auth/invalid-email') friendly = 'Please enter a valid email address.';
-      if (err.code === 'auth/invalid-credential') friendly = 'Email or password is incorrect.';
-      errorMsg.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ${friendly}`;
-      errorMsg.classList.add('show');
+      console.error('Login error:', err);
+      // Only show Firebase auth errors if we haven't already shown a custom error
+      if (!["Missing account number", "Invalid account number", "Email mismatch", "Account suspended"].includes(err.message)) {
+        let friendly = 'Invalid email or password. Please try again.';
+        if (err.code === 'auth/user-not-found') friendly = 'No account found with this email.';
+        if (err.code === 'auth/wrong-password') friendly = 'Incorrect password.';
+        if (err.code === 'auth/invalid-email') friendly = 'Please enter a valid email address.';
+        if (err.code === 'auth/invalid-credential') friendly = 'Email, account number, or password is incorrect.';
+        if (err.code === 'auth/too-many-requests') friendly = 'Too many failed attempts. Please try again later.';
+        showError(friendly);
+      }
+    } finally {
+      submitBtn.classList.remove('loading');
+      submitBtn.innerHTML = `Sign In <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
     }
   });
 </script>
