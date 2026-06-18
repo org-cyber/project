@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Synergy Trust Bank — Add Account Statement</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -21,22 +21,16 @@
   --accent: #4f46e5;
   --accent-light: #6366f1;
   --accent-bg: rgba(79,70,229,0.06);
-  --accent-bg-hover: rgba(79,70,229,0.1);
   --green: #059669;
   --green-bg: rgba(5,150,105,0.08);
   --red: #dc2626;
   --red-bg: rgba(220,38,38,0.08);
   --amber: #d97706;
   --amber-bg: rgba(217,119,6,0.08);
-  --blue: #2563eb;
-  --blue-bg: rgba(37,99,235,0.08);
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 16px;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
-  --shadow-lg: 0 2px 8px rgba(0,0,0,0.08);
   --sidebar-width: 260px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -49,6 +43,8 @@ body {
   overflow-x: hidden;
 }
 .app { display:flex; min-height:100vh; }
+
+/* ===== SIDEBAR ===== */
 .sidebar {
   width:var(--sidebar-width);
   background:var(--bg-sidebar);
@@ -57,9 +53,11 @@ body {
   flex-direction:column;
   padding:24px 0;
   position:fixed;
-  height:100vh;
   top:0;
   left:0;
+  min-height:100vh;
+  height:100vh;
+  height:100dvh;
   z-index:100;
   transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
   overflow-y:auto;
@@ -69,16 +67,13 @@ body {
   position:fixed;
   inset:0;
   background:rgba(0,0,0,0.45);
-  z-index:99;
+  z-index:90;
   opacity:0;
   visibility:hidden;
   transition:opacity 0.3s, visibility 0.3s;
 }
 .sidebar-backdrop.visible { opacity:1; visibility:visible; }
 .sidebar-header { padding:0 20px 28px; display:flex; align-items:center; gap:10px; }
-.logo-icon { width:28px; height:28px; background:#ffffff; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; }
-.logo-icon svg { width:16px; height:16px; color:#0a0a0f; }
-.logo-text { font-size:18px; font-weight:800; letter-spacing:-0.3px; color:#ffffff; }
 .nav-section { padding:0 12px; margin-bottom:8px; }
 .nav-menu { display:flex; flex-direction:column; gap:2px; }
 .nav-item {
@@ -89,7 +84,7 @@ body {
 .nav-item:hover { background:rgba(255,255,255,0.05); color:#ffffff; }
 .nav-item.active { background:rgba(255,255,255,0.08); color:var(--text-sidebar-active); font-weight:600; }
 .nav-item svg { width:18px; height:18px; flex-shrink:0; stroke-width:2; }
-.sidebar-footer { margin-top:auto; padding:0 12px; display:flex; flex-direction:column; gap:2px; padding-bottom: 8px; }
+.sidebar-footer { margin-top:auto; padding:0 12px 8px; display:flex; flex-direction:column; gap:2px; }
 .logout-btn {
   display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:var(--radius-sm);
   color:var(--text-sidebar); font-size:13px; font-weight:500; border:none; background:none;
@@ -97,22 +92,17 @@ body {
 }
 .logout-btn:hover { background:rgba(220,38,38,0.1); color:var(--red); }
 .logout-btn svg { width:18px; height:18px; }
+
+/* ===== MAIN ===== */
 .main { flex:1; margin-left:var(--sidebar-width); padding:20px 28px 28px; min-height:100vh; }
 .top-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; gap:12px; }
-.page-title { min-width: 0; }
+.top-bar-header { display:flex; align-items:center; gap:12px; flex:1; min-width:0; }
+.page-title { min-width: 0; flex:1; }
 .page-title h1 { font-size:22px; font-weight:700; letter-spacing:-0.3px; margin-bottom:2px; }
 .page-title p { font-size:12px; color:var(--text-muted); }
-.search-box {
-  display:flex; align-items:center; gap:10px; background:var(--bg-white); border:1px solid var(--border);
-  border-radius:var(--radius-xl); padding:9px 16px; width:320px; transition:all 0.15s ease; flex-shrink: 0;
-}
-.search-box:focus-within { border-color:var(--border-strong); box-shadow:0 0 0 3px var(--accent-bg); }
-.search-box svg { width:16px; height:16px; color:var(--text-muted); flex-shrink:0; }
-.search-box input { border:none; outline:none; font-family:inherit; font-size:13px; color:var(--text-primary); width:100%; background:transparent; }
-.search-box input::placeholder { color:var(--text-muted); }
 .top-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
 .menu-btn {
-  display:none; width:38px; height:38px; border-radius:var(--radius-md); border:1px solid var(--border);
+  display:none; width:40px; height:40px; border-radius:var(--radius-md); border:1px solid var(--border);
   background:var(--bg-white); color:var(--text-secondary); cursor:pointer; align-items:center;
   justify-content:center; flex-shrink:0; transition:all 0.15s ease;
 }
@@ -137,8 +127,17 @@ body {
   width:36px; height:36px; border-radius:50%; background:var(--text-primary); display:flex;
   align-items:center; justify-content:center; font-weight:700; font-size:13px; color:white; cursor:pointer; flex-shrink:0;
 }
+
+/* ===== FORM ===== */
 .page-content { max-width:960px; }
-.form-card { background:var(--bg-white); border:1px solid var(--border); border-radius:var(--radius-lg); padding:28px; animation:fadeInUp 0.4s ease; }
+.form-card { 
+  background:var(--bg-white); 
+  border:1px solid var(--border); 
+  border-radius:var(--radius-lg); 
+  padding:28px; 
+  animation:fadeInUp 0.4s ease;
+  margin-bottom: 20px;
+}
 .form-header { margin-bottom:24px; }
 .form-header h2 { font-size:16px; font-weight:700; margin-bottom:4px; }
 .form-header p { font-size:12px; color:var(--text-muted); }
@@ -159,9 +158,25 @@ body {
   background-repeat:no-repeat; background-position:right 12px center; padding-right:36px; cursor:pointer;
 }
 .form-textarea { min-height:120px; resize:vertical; }
-.form-actions { display:flex; align-items:center; gap:10px; margin-top:8px; }
+.form-actions { 
+  display:flex; 
+  align-items:center; 
+  gap:10px; 
+  margin-top:8px;
+  padding-top: 8px;
+}
 .btn-lg { padding:12px 24px; font-size:13px; }
-.table-section { background:var(--bg-white); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; animation:fadeInUp 0.4s ease; margin-top:20px; }
+
+/* ===== TABLE ===== */
+.table-section { 
+  background:var(--bg-white); 
+  border:1px solid var(--border); 
+  border-radius:var(--radius-lg); 
+  overflow:hidden; 
+  animation:fadeInUp 0.4s ease;
+  margin-top:20px;
+  overflow-x: auto;
+}
 .table-header { padding:20px 24px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); gap:12px; flex-wrap: wrap; }
 .table-header h2 { font-size:16px; font-weight:700; }
 .table-filters { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
@@ -231,11 +246,6 @@ body {
 }
 .page-btn:hover { background:var(--border-light); color:var(--text-primary); }
 .page-btn.active { background:var(--accent); border-color:var(--accent); color:white; }
-.empty-state { padding:60px 24px; text-align:center; }
-.empty-state-icon { width:48px; height:48px; border-radius:50%; background:var(--border-light); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; color:var(--text-muted); }
-.empty-state-icon svg { width:24px; height:24px; }
-.empty-state h3 { font-size:14px; font-weight:600; color:var(--text-secondary); margin-bottom:4px; }
-.empty-state p { font-size:12px; color:var(--text-muted); }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .btn-primary:disabled { opacity:0.7; cursor:not-allowed; }
 .btn-primary.loading { pointer-events:none; }
@@ -247,147 +257,224 @@ body {
 ::-webkit-scrollbar { width:5px; height:5px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-@media (max-width:1024px) { .form-grid { grid-template-columns:1fr; } }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width:1024px) {
+  .form-grid { grid-template-columns:1fr; }
+}
+
 @media (max-width:768px) {
-  .sidebar { transform:translateX(-100%); width:260px; box-shadow:16px 0 40px rgba(0,0,0,0.15); }
+  /* Sidebar from RIGHT */
+  .sidebar {
+    left:auto;
+    right:0;
+    transform:translateX(100%);
+    width:280px;
+    border-right:none;
+    border-left:1px solid #1a1a2e;
+    box-shadow:-16px 0 40px rgba(0,0,0,0.15);
+  }
   .sidebar.open { transform:translateX(0); }
+  
   .menu-btn { display:flex; }
-  .main { margin-left:0; padding:16px; }
-  .top-bar { flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-  .search-box { width:100%; order:3; }
-  .top-actions { margin-left:auto; }
-  .form-card { padding:18px 16px; }
+  
+  .main { 
+    margin-left:0; 
+    padding:12px;
+    padding-bottom: 40px;
+  }
+  
+  .top-bar {
+    flex-direction:column;
+    gap:12px;
+    margin-bottom:16px;
+    align-items:stretch;
+  }
+  
+  .top-bar-header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+    gap:12px;
+  }
+  
+  .page-title h1 { font-size:20px; }
+  .page-title p { font-size:11px; }
+  
+  .top-actions {
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+  }
+  
+  /* Form mobile - FIXED PADDING */
+  .form-card { 
+    padding:20px 16px 24px;
+    margin-bottom: 16px;
+  }
   .form-header { margin-bottom:20px; }
-  .form-header h2 { font-size:15px; }
+  .form-header h2 { font-size:16px; }
+  .form-header p { font-size:12px; }
   .form-grid { grid-template-columns:1fr; gap:16px; margin-bottom:16px; }
-  .form-group.full-width { grid-column:1; }
-  .form-input, .form-select, .form-textarea { font-size:16px; }
-  .form-actions { flex-direction:column; gap:8px; margin-top:4px; }
-  .btn-lg { width:100%; justify-content:center; padding:13px 20px; }
-  .btn-ghost { width:100%; justify-content:center; }
-  .table-header { padding:16px; flex-direction:column; align-items:flex-start; }
+  .form-input, .form-select, .form-textarea { 
+    font-size:16px;
+    padding:12px 14px;
+  }
+  .form-textarea { min-height:100px; }
+  .form-actions { 
+    flex-direction:row;
+    gap:10px;
+    margin-top:12px;
+    padding-top: 12px;
+  }
+  .btn-lg { 
+    flex:1;
+    justify-content:center; 
+    padding:14px 20px;
+    font-size:14px;
+  }
+  .btn-ghost { 
+    flex:1;
+    justify-content:center;
+    padding:14px 20px;
+  }
+  
+  /* Table mobile */
+  .table-section { 
+    margin-top:16px;
+    border-radius:12px;
+  }
+  .table-header { 
+    padding:16px;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:12px;
+  }
+  .table-header h2 { font-size:15px; }
   .table-filters { width:100%; overflow-x:auto; padding-bottom:4px; }
-  .table-footer { padding:12px 16px; flex-direction:column; align-items:flex-start; gap:10px; }
+  .table-footer { 
+    padding:12px 16px;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
   .pagination { width:100%; justify-content:center; }
 }
+
 @media (max-width:480px) {
-  .main { padding:12px; }
-  .top-bar { margin-bottom:16px; gap:10px; }
-  .page-title h1 { font-size:18px; }
-  .page-title p { font-size:11px; }
-  .form-card { padding:14px 12px; }
-  .form-header { margin-bottom:16px; }
-  .form-header h2 { font-size:14px; }
-  .form-header p { font-size:11px; }
-  .form-grid { gap:14px; }
-  .form-label { font-size:11.5px; }
-  .form-input, .form-select, .form-textarea { padding:10px 12px; }
-  .form-textarea { min-height:90px; }
-  .top-actions { gap:6px; }
-  .btn-icon { width:32px; height:32px; }
-  .btn-icon svg { width:14px; height:14px; }
-  .user-avatar { width:32px; height:32px; font-size:12px; }
-  .menu-btn { width:34px; height:34px; }
-  .menu-btn svg { width:18px; height:18px; }
+  .main { 
+    padding:8px;
+    padding-bottom: 40px;
+  }
+  .form-card { 
+    padding:18px 14px 22px;
+    border-radius:12px;
+  }
+  .form-header h2 { font-size:15px; }
+  .form-input, .form-select, .form-textarea { 
+    padding:11px 12px;
+    font-size:16px;
+  }
+  .form-label { font-size:12px; }
+  .btn-lg, .btn-ghost { 
+    padding:13px 18px;
+    font-size:14px;
+  }
+  .menu-btn { 
+    width:38px; 
+    height:38px;
+  }
+  .btn-icon { 
+    width:34px; 
+    height:34px;
+  }
+  .user-avatar { 
+    width:34px; 
+    height:34px;
+    font-size:12px;
+  }
 }
-@media (max-height:500px) and (max-width:768px) {
-  .sidebar { padding:16px 0; }
-  .sidebar-header { padding:0 16px 20px; }
-  .form-card { padding:14px 12px; }
-  .form-textarea { min-height:60px; }
+
+@media (max-height:700px) and (max-width:768px) {
+  .main { padding-bottom: 20px; }
+  .form-card { padding:16px 14px 20px; }
+  .form-textarea { min-height:80px; }
 }
 </style>
-
 </head>
 <body>
 <div class="app">
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-       <img src="logo.png" alt="Synergy" style="height: 32px; width: auto; object-fit: contain; border-radius: 6px;">
+      <img src="logo.png" alt="Synergy" style="height: 32px; width: auto; object-fit: contain; border-radius: 6px;">
     </div>
     <div class="nav-section">
       <nav class="nav-menu">
         <a href="dashboard_admin.html" class="nav-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
           Dashboard
         </a>
         <a href="register.html" class="nav-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Register User | Account
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Register User
         </a>
         <a href="acct_statement.html" class="nav-item active">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          Add acct Statement
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Add Statement
         </a>
         <a href="trans_details_admin.html" class="nav-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          Transaction Details
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Transactions
         </a>
         <a href="accounts.html" class="nav-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          View all Accounts
-        </a>
-        <a href="account_status.html" class="nav-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          Update account status
-        </a>
-        <a href="account_balance.html" class="nav-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Update account balance
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Accounts
         </a>
       </nav>
     </div>
     <div class="sidebar-footer">
       <button class="logout-btn" id="logoutBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Logout
       </button>
     </div>
   </aside>
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  
   <main class="main">
     <div class="top-bar">
-      <button class="menu-btn" type="button" id="menuBtn" aria-label="Open navigation menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
-        </svg>
-      </button>
-      <div class="page-title">
-        <h1>Add Account Statement</h1>
-        <p>Record new credit and debit entries for account holders</p>
+      <div class="top-bar-header">
+        <div class="page-title">
+          <h1>Add Account Statement</h1>
+          <p>Record credit and debit entries</p>
+        </div>
+        <button class="menu-btn" type="button" id="menuBtn" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        </button>
       </div>
       <div class="top-actions">
-        <div class="search-box">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input type="text" placeholder="Search anything...">
-        </div>
         <button class="btn-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         </button>
         <div class="user-avatar">A</div>
       </div>
     </div>
+    
     <div class="page-content">
       <div class="form-card">
         <div class="form-header">
-          <h2>Add Account Statement</h2>
-          <p>Enter transaction details to append a new statement record.</p>
+          <h2>New Statement</h2>
+          <p>Enter transaction details below</p>
         </div>
         <form id="statementForm">
           <div class="form-grid">
-            <div class="form-group">
+            <div class="form-group full-width">
               <label class="form-label">Transaction Date<span class="required">*</span></label>
               <input type="date" class="form-input" id="txDate" required>
             </div>
-            <div class="form-group">
+            <div class="form-group full-width">
               <label class="form-label">Account Number<span class="required">*</span></label>
               <input type="text" class="form-input" placeholder="e.g. 5501622201" inputmode="numeric" id="txAccNo" required>
             </div>
@@ -405,73 +492,38 @@ body {
             </div>
           </div>
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary btn-lg">Add</button>
+            <button type="submit" class="btn btn-primary btn-lg">Add Statement</button>
             <button type="reset" class="btn btn-ghost">Cancel</button>
           </div>
         </form>
       </div>
+      
       <div class="table-section">
         <div class="table-header">
           <h2>Recent Statements</h2>
           <div class="table-filters">
-            <button class="filter-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              Search
-            </button>
-            <button class="filter-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-              Filter
-            </button>
+            <button class="filter-btn">Filter</button>
           </div>
         </div>
         <div class="table-scroll">
           <table class="data-table">
             <thead>
               <tr>
-                <th></th>
-                <th>Invoice</th>
-                <th>Transaction</th>
                 <th>Date</th>
+                <th>Account</th>
                 <th>Amount</th>
                 <th>Status</th>
-                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><div class="checkbox" onclick="toggleCheckbox(this)"></div></td>
-                <td>
-                  <div class="invoice-cell">
-                    <div class="invoice-icon" style="background:var(--green-bg);color:var(--green);">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                    </div>
-                    <div class="invoice-info"><span class="invoice-id">STMT_001245</span><span class="invoice-desc">Credit entry</span></div>
-                  </div>
-                </td>
-                <td>
-                  <div class="transaction-cell">
-                    <div class="transaction-avatar" style="background:linear-gradient(135deg,#60a5fa,#3b82f6);">JD</div>
-                    <div class="transaction-info"><span class="transaction-name">John Doe</span><span class="transaction-email">5501622201</span></div>
-                  </div>
-                </td>
-                <td><span class="date-cell">12 Nov, 2024</span></td>
-                <td><span class="amount-cell positive">+$5,200.00</span></td>
-                <td><span class="status-badge completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Completed</span></td>
-                <td>
-                  <div class="action-btns">
-                    <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-                    <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-                  </div>
-                </td>
+                <td><span class="date-cell">12 Nov 2024</span></td>
+                <td><span class="transaction-name">5501622201</span></td>
+                <td><span class="amount-cell positive">+$5,200</span></td>
+                <td><span class="status-badge completed">Completed</span></td>
               </tr>
             </tbody>
           </table>
-        </div>
-        <div class="table-footer">
-          <span>Showing 1 of 1 entries</span>
-          <div class="pagination">
-            <button class="page-btn active">1</button>
-          </div>
         </div>
       </div>
     </div>
@@ -479,7 +531,6 @@ body {
 </div>
 
 <script>
-  // ===== UI LOGIC (Sidebar & Checkboxes) =====
   const sidebar = document.getElementById('sidebar');
   const sidebarBackdrop = document.getElementById('sidebarBackdrop');
   const menuBtn = document.getElementById('menuBtn');
@@ -493,22 +544,16 @@ body {
 
   menuBtn.addEventListener('click', function() { toggleSidebar(); });
   sidebarBackdrop.addEventListener('click', function() { toggleSidebar(false); });
-
   document.querySelectorAll('.nav-item').forEach(function(link) {
     link.addEventListener('click', function() {
       if (window.innerWidth <= 768) toggleSidebar(false);
     });
   });
 
-  window.addEventListener('resize', function() {
-    if (window.innerWidth > 768) toggleSidebar(false);
-  });
-
   function toggleCheckbox(el) { el.classList.toggle('checked'); }
 </script>
 
 <script type="module">
-  // ===== FIRESTORE LOGIC =====
   import { auth, db } from './firebase-config.js';
   import { collection, query, where, getDocs, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
@@ -518,42 +563,37 @@ body {
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    // 1. Get Form Values
     const dateVal = document.getElementById('txDate').value;
     const accNo = document.getElementById('txAccNo').value.trim();
     const creditVal = document.getElementById('txCredit').value.trim();
     const debitVal = document.getElementById('txDebit').value.trim();
     const desc = document.getElementById('txDesc').value.trim();
 
-    // Basic Validation
     if (!dateVal || !accNo || !desc || (!creditVal && !debitVal)) {
-      alert('Please fill in all required fields (Date, Account Number, Description, and either Credit or Debit).');
+      alert('Please fill in all required fields.');
       return;
     }
 
-    // UI Loading State
     submitBtn.classList.add('loading');
     submitBtn.disabled = true;
     var originalText = submitBtn.textContent;
     submitBtn.textContent = 'Adding';
 
     try {
-      // 2. Find the user by Account Number to get their UID
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("accountNumber", "==", accNo));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        alert('Error: Account number not found in the system.');
+        alert('Account number not found.');
         throw new Error('Account not found');
       }
 
       const userDoc = querySnapshot.docs[0];
-      const userId = userDoc.id; // This is the user's UID
+      const userId = userDoc.id;
       const userData = userDoc.data();
-      const fullName = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'Unknown User';
+      const fullName = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'Unknown';
 
-      // 3. Determine Amount and Type (Credit vs Debit)
       let amount = 0;
       let type = 'credit';
       if (creditVal && parseFloat(creditVal) > 0) {
@@ -564,30 +604,28 @@ body {
         type = 'debit';
       }
 
-      // 4. Create the Transaction Document
       const txDate = new Date(dateVal);
       
       await addDoc(collection(db, "transactions"), {
-        fromUserId: userId,       // Links to the specific user's dashboard
-        accountNumber: accNo,     // Stored for easy admin reference
+        fromUserId: userId,
+        accountNumber: accNo,
         timestamp: Timestamp.fromDate(txDate),
         amount: amount,
-        type: type,               // 'credit' or 'debit'
+        type: type,
         reason: desc,
         toName: fullName,
         status: 'completed'
       });
 
-      alert('Account statement added successfully!');
+      alert('Statement added successfully!');
       form.reset();
 
     } catch (error) {
-      console.error('Error adding statement:', error);
+      console.error('Error:', error);
       if (error.message !== 'Account not found') {
-        alert('An error occurred while adding the statement. Check console for details.');
+        alert('Error adding statement.');
       }
     } finally {
-      // Reset UI State
       submitBtn.classList.remove('loading');
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;

@@ -20,9 +20,30 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text-primary); min-height:100vh; -webkit-font-smoothing:antialiased; overflow-x: hidden; }
 .app { display:flex; min-height:100vh; }
-.sidebar { width:var(--sidebar-width); background:var(--bg-sidebar); border-right:1px solid #1a1a2e; display:flex; flex-direction:column; padding:24px 0; position:fixed; height:100vh; top:0; left:0; z-index:100; transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); overflow-y:auto; }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width:var(--sidebar-width);
+  background:var(--bg-sidebar);
+  border-right:1px solid #1a1a2e;
+  display:flex;
+  flex-direction:column;
+  padding:24px 0;
+  position:fixed;
+  top:0;
+  left:0;
+  /* FIX: use min-height so it always reaches the bottom of the viewport,
+     even on mobile browsers where 100vh can be shorter than the visible area
+     due to the address bar. */
+  min-height:100vh;
+  height:100vh;
+  height:100dvh; /* dynamic viewport height — modern browsers */
+  z-index:100;
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  overflow-y:auto;
+}
 .sidebar.open { transform:translateX(0); }
-.sidebar-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:99; opacity:0; visibility:hidden; transition:opacity 0.3s, visibility 0.3s; }
+.sidebar-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:90; opacity:0; visibility:hidden; transition:opacity 0.3s, visibility 0.3s; }
 .sidebar-backdrop.visible { opacity:1; visibility:visible; }
 .sidebar-header { padding:0 20px 28px; display:flex; align-items:center; gap:10px; }
 .logo-icon { width:28px; height:28px; background:#ffffff; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; }
@@ -38,16 +59,14 @@ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgrou
 .logout-btn { display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:var(--radius-sm); color:var(--text-sidebar); font-size:13px; font-weight:500; border:none; background:none; cursor:pointer; width:100%; text-align:left; transition:all 0.15s ease; font-family:inherit; }
 .logout-btn:hover { background:rgba(220,38,38,0.1); color:var(--red); }
 .logout-btn svg { width:18px; height:18px; }
+
+/* ===== MAIN ===== */
 .main { flex:1; margin-left:var(--sidebar-width); padding:20px 28px 28px; min-height:100vh; }
 .top-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; gap:12px; }
+.top-bar-header { display:flex; align-items:center; gap:12px; flex:1; }
 .page-title { min-width: 0; }
 .page-title h1 { font-size:22px; font-weight:700; letter-spacing:-0.3px; margin-bottom:2px; }
 .page-title p { font-size:12px; color:var(--text-muted); }
-.search-box { display:flex; align-items:center; gap:10px; background:var(--bg-white); border:1px solid var(--border); border-radius:var(--radius-xl); padding:9px 16px; width:320px; transition:all 0.15s ease; flex-shrink: 0; }
-.search-box:focus-within { border-color:var(--border-strong); box-shadow:0 0 0 3px var(--accent-bg); }
-.search-box svg { width:16px; height:16px; color:var(--text-muted); flex-shrink:0; }
-.search-box input { border:none; outline:none; font-family:inherit; font-size:13px; color:var(--text-primary); width:100%; background:transparent; }
-.search-box input::placeholder { color:var(--text-muted); }
 .top-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
 .menu-btn { display:none; width:38px; height:38px; border-radius:var(--radius-md); border:1px solid var(--border); background:var(--bg-white); color:var(--text-secondary); cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.15s ease; }
 .menu-btn:hover { border-color:var(--border-strong); color:var(--text-primary); }
@@ -87,12 +106,29 @@ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgrou
 
 @media (max-width:1024px) { .form-grid { grid-template-columns:1fr; } }
 @media (max-width:768px) {
-  .sidebar { transform:translateX(-100%); width:260px; box-shadow:16px 0 40px rgba(0,0,0,0.15); }
+  .sidebar {
+    left:auto;
+    right:0;
+    transform:translateX(100%);
+    width:260px;
+    border-right:none;
+    border-left:1px solid #1a1a2e;
+    box-shadow:-16px 0 40px rgba(0,0,0,0.15);
+    /* ensure full height on mobile too */
+    min-height:100vh;
+    height:100vh;
+    height:100dvh;
+  }
   .sidebar.open { transform:translateX(0); }
   .menu-btn { display:flex; }
   .main { margin-left:0; padding:16px; }
-  .top-bar { flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-  .search-box { width:100%; order:3; }
+  .top-bar { flex-direction:column; gap:12px; margin-bottom:20px; align-items:stretch; }
+  .top-bar-header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+  }
   .top-actions { margin-left:auto; }
   .form-card { padding:18px 16px; }
   .form-grid { grid-template-columns:1fr; gap:16px; margin-bottom:16px; }
@@ -129,10 +165,11 @@ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgrou
 
   <main class="main">
     <div class="top-bar">
-      <button class="menu-btn" type="button" id="menuBtn" aria-label="Open navigation menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-      <div class="page-title"><h1>Register New User</h1><p>Create a new bank account and user profile</p></div>
+      <div class="top-bar-header">
+        <div class="page-title"><h1>Register New User</h1><p>Create a new bank account and user profile</p></div>
+        <button class="menu-btn" type="button" id="menuBtn" aria-label="Open navigation menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+      </div>
       <div class="top-actions">
-        <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search anything..."></div>
         <button class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
         <div class="user-avatar">A</div>
       </div>
@@ -260,14 +297,13 @@ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgrou
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    // 1. Gather Form Data
     const data = {
       firstName: document.getElementById('firstName').value.trim(),
       lastName: document.getElementById('lastName').value.trim(),
       email: document.getElementById('email').value.trim(),
       phoneNumber: document.getElementById('phone').value.trim(),
       gender: document.getElementById('gender').value,
-      password: document.getElementById('password').value, // Stored for admin view (See security note)
+      password: document.getElementById('password').value,
       address: document.getElementById('address').value.trim(),
       cityState: document.getElementById('cityState').value.trim(),
       zipCode: document.getElementById('zipCode').value.trim(),
@@ -280,27 +316,20 @@ body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; backgrou
       createdAt: Timestamp.now()
     };
 
-    // UI Loading State
     submitBtn.classList.add('loading');
     submitBtn.disabled = true;
     var originalText = submitBtn.textContent;
     submitBtn.textContent = 'Creating';
 
     try {
-      // 2. Create User in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const uid = userCredential.user.uid;
-
-      // 3. Save Profile to Firestore under the new UID
       await setDoc(doc(db, "users", uid), data);
 
       alert('User created successfully!\n\nNote: You have been logged out of the admin panel. Please log back in to continue.');
       form.reset();
       document.getElementById('accountNumber').value = generateAccountNumber();
       
-      // Optional: Redirect to login page
-      // window.location.href = 'index.html';
-
     } catch (error) {
       console.error('Error creating user:', error);
       if (error.code === 'auth/email-already-in-use') {
