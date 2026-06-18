@@ -180,6 +180,13 @@ justify-content:space-between;
 margin-bottom:24px;
 }
 
+.top-bar-header {
+display:flex;
+align-items:center;
+gap:12px;
+flex:1;
+}
+
 .page-title h1 {
 font-size:22px;
 font-weight:700;
@@ -271,6 +278,8 @@ transition:all 0.15s ease;
 .btn-icon:hover { border-color:var(--border-strong); color:var(--text-primary); }
 .btn-icon svg { width:16px; height:16px; }
 
+/* FIX 1: base state is display:none. flex alignment props are inert when display:none,
+   so they can safely live here and activate when mobile mq flips display to flex. */
 .menu-btn {
 display:none;
 width:42px;
@@ -279,11 +288,11 @@ border-radius:12px;
 border:1px solid var(--border);
 background:var(--bg-white);
 color:var(--text-secondary);
-display:flex;
 align-items:center;
 justify-content:center;
 cursor:pointer;
 transition:all 0.15s ease;
+flex-shrink:0;
 }
 .menu-btn:hover { border-color:var(--border-strong); color:var(--text-primary); }
 .menu-btn svg { width:18px; height:18px; }
@@ -1011,25 +1020,41 @@ flex-direction:column;
 
 @media (max-width:768px) {
 .app { flex-direction:column; }
+
+/* FIX 2 + 3: sidebar slides in from the RIGHT on mobile */
 .sidebar {
 position:fixed;
-transform:translateX(-100%);
+left:auto;
+right:0;
+transform:translateX(100%);
 width:260px;
 height:100vh;
 min-height:100vh;
 top:0;
-left:0;
-border-right:1px solid #1a1a2e;
-box-shadow:16px 0 40px rgba(0,0,0,0.15);
+border-right:none;
+border-left:1px solid #1a1a2e;
+box-shadow:-16px 0 40px rgba(0,0,0,0.15);
 }
 .sidebar.open { transform:translateX(0); }
 .sidebar-backdrop { display:block; }
+
 .main { margin-left:0; padding:16px; }
 .stats-row { grid-template-columns:1fr; }
 .metrics-row { flex-direction:column; gap:16px; }
 .quick-actions { justify-content:flex-start; flex-wrap:wrap; }
+
+/* FIX 2: top-bar stacks, but header row keeps title + hamburger inline */
 .top-bar { flex-direction:column; gap:12px; align-items:stretch; }
+.top-bar-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+}
+
+/* FIX 1: hamburger only visible on mobile */
 .menu-btn { display:flex; }
+
 .search-box { width:100%; }
 .data-table { display:block; overflow-x:auto; min-width:720px; }
 .table-section { overflow-x:auto; }
@@ -1045,7 +1070,7 @@ box-shadow:16px 0 40px rgba(0,0,0,0.15);
 .panel-card:nth-child(3) { animation-delay:0.28s; }
 .table-section { animation-delay:0.32s; }
 </style>
-<base target="_blank">
+<!-- FIX 3: removed <base target="_blank"> which forced every link to open in a new tab -->
 </head>
 <body>
 <div class="app">
@@ -1133,33 +1158,36 @@ Logout
 <div class="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
 <main class="main">
 <div class="top-bar">
-<button class="menu-btn" type="button" onclick="toggleSidebar()" aria-label="Open navigation menu">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<line x1="4" y1="7" x2="20" y2="7"/>
-<line x1="4" y1="12" x2="20" y2="12"/>
-<line x1="4" y1="17" x2="20" y2="17"/>
-</svg>
-</button>
-<div class="page-title">
-<h1>Dashboard</h1>
-<p>Monitor accounts, transactions, and system activity</p>
-</div>
-<div class="top-actions">
-<div class="search-box">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<circle cx="11" cy="11" r="8"/>
-<line x1="21" y1="21" x2="16.65" y2="16.65"/>
-</svg>
-<input type="text" placeholder="Search anything...">
-</div>
-<button class="btn-icon">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-<path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-</svg>
-</button>
-<div class="user-avatar">A</div>
-</div>
+  <!-- FIX 2: wrap title + hamburger in a header row so they share a line on mobile -->
+  <div class="top-bar-header">
+    <div class="page-title">
+      <h1>Dashboard</h1>
+      <p>Monitor accounts, transactions, and system activity</p>
+    </div>
+    <button class="menu-btn" type="button" onclick="toggleSidebar()" aria-label="Open navigation menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="7" x2="20" y2="7"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="17" x2="20" y2="17"/>
+      </svg>
+    </button>
+  </div>
+  <div class="top-actions">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" placeholder="Search anything...">
+    </div>
+    <button class="btn-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+    </button>
+    <div class="user-avatar">A</div>
+  </div>
 </div>
 
 <div class="dashboard-grid">
@@ -1481,7 +1509,6 @@ function toggleCheckbox(el) { el.classList.toggle('checked'); }
   });
 
   function loadAdminMetrics() {
-    // 1. Listen to ALL users for metrics, top users, and recent users
     onSnapshot(collection(db, "users"), (usersSnap) => {
       let totalAccounts = usersSnap.size;
       let liveCount = 0;
@@ -1497,23 +1524,18 @@ function toggleCheckbox(el) { el.classList.toggle('checked'); }
         totalProfit += parseFloat(data.balance || 0);
       });
 
-      // Update System Overview
       document.getElementById('totalAccounts').textContent = totalAccounts;
       document.getElementById('liveCount').textContent = liveCount;
       document.getElementById('suspendedCount').textContent = suspendedCount;
       
-      // Update Stat Cards
       document.getElementById('metricLive').textContent = liveCount;
       document.getElementById('metricSuspended').textContent = suspendedCount;
       
-      // Update Profit / Total Balance
       document.getElementById('totalProfit').textContent = totalProfit.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
 
-      // Top 5 Users by Balance (Quick Actions)
       const topUsers = usersList.sort((a, b) => (b.balance || 0) - (a.balance || 0)).slice(0, 5);
       const quickActionsContainer = document.getElementById('quickActionsContainer');
       
-      // Keep the first child (New User) and last child (Nav button), clear the rest
       const newUserBtn = quickActionsContainer.children[0].outerHTML;
       const navBtn = quickActionsContainer.children[quickActionsContainer.children.length - 1].outerHTML;
       quickActionsContainer.innerHTML = newUserBtn;
@@ -1539,7 +1561,6 @@ function toggleCheckbox(el) { el.classList.toggle('checked'); }
       });
       quickActionsContainer.insertAdjacentHTML('beforeend', navBtn);
 
-      // Last Registered Users Table
       const recentUsers = usersList.sort((a, b) => {
         const tA = a.createdAt?.toMillis() || 0;
         const tB = b.createdAt?.toMillis() || 0;
@@ -1627,7 +1648,6 @@ function toggleCheckbox(el) { el.classList.toggle('checked'); }
       console.error("Error listening to users:", err);
     });
 
-    // 2. Listen to ALL transactions for total count
     onSnapshot(collection(db, "transactions"), (txSnap) => {
       const totalTx = txSnap.size;
       document.getElementById('totalTx').textContent = totalTx;
@@ -1636,8 +1656,6 @@ function toggleCheckbox(el) { el.classList.toggle('checked'); }
       console.error("Error listening to transactions:", err);
     });
   }
-
-  
 </script>
 </body>
 </html>
