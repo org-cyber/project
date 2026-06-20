@@ -15,7 +15,7 @@
     color: #333;
   }
 
-  /* ===== NAVIGATION SIDEBAR (Fixed Left) ===== */
+  /* ===== NAVIGATION SIDEBAR (Fixed Left on Desktop) ===== */
   .nav-sidebar {
     width: 280px;
     min-width: 280px;
@@ -29,7 +29,21 @@
     z-index: 100;
     left: 0;
     top: 0;
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
+
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 99;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+  }
+  .sidebar-backdrop.visible { opacity: 1; visibility: visible; }
 
   .nav-sidebar .sidebar-header {
     padding: 0 20px 28px;
@@ -92,6 +106,7 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    padding-bottom: 8px;
   }
 
   .logout-btn {
@@ -109,6 +124,7 @@
     width: 100%;
     text-align: left;
     transition: all 0.15s ease;
+    font-family: inherit;
   }
 
   .logout-btn:hover { background: rgba(220,38,38,0.1); color: #ef4444; }
@@ -173,6 +189,7 @@
     font-size: 14px;
     font-weight: 600;
     color: #555;
+    flex-shrink: 0;
   }
 
   .chat-item-info { flex: 1; min-width: 0; }
@@ -198,6 +215,7 @@
   .chat-item-time {
     font-size: 11px;
     color: #aaa;
+    flex-shrink: 0;
   }
 
   .unread-badge {
@@ -227,6 +245,40 @@
     background: #fff;
     border-bottom: 1px solid #f0f0f0;
   }
+
+  .menu-btn {
+    display: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    color: #666;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+  }
+  .menu-btn:hover { border-color: #d0d0d0; color: #111; }
+  .menu-btn svg { width: 20px; height: 20px; }
+
+  .back-btn {
+    display: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    color: #666;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+  }
+  .back-btn:hover { border-color: #d0d0d0; color: #111; }
+  .back-btn svg { width: 20px; height: 20px; }
 
   .topbar-title { font-size: 15px; font-weight: 600; color: #111; }
   .topbar-subtitle { font-size: 12px; color: #888; }
@@ -315,6 +367,7 @@
     font-weight: 600;
     color: #fff;
     cursor: pointer;
+    transition: background 0.15s;
   }
 
   .chat-send-btn:hover { background: #6d28d9; }
@@ -333,10 +386,131 @@
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 2px; }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE: Mobile (≤768px)
+     ══════════════════════════════════════ */
+  @media (max-width: 768px) {
+    /* Nav sidebar: right-aligned drawer */
+    .nav-sidebar {
+      left: auto;
+      right: 0;
+      transform: translateX(100%);
+      width: 280px;
+      border-right: none;
+      border-left: 1px solid #1a1a2e;
+      box-shadow: -16px 0 40px rgba(0,0,0,0.15);
+    }
+    .nav-sidebar.open { transform: translateX(0); }
+
+    /* Chat sidebar: full width, no left margin */
+    .chat-sidebar {
+      margin-left: 0;
+      width: 100%;
+      min-width: 100%;
+    }
+
+    /* Main: hidden by default on mobile, shown when chat selected */
+    .main {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+    }
+    .main.active {
+      display: flex;
+    }
+
+    /* Show menu button and back button */
+    .menu-btn { display: flex; }
+    .back-btn { display: flex; }
+
+    /* Topbar adjustments */
+    .topbar {
+      padding: 12px 16px;
+      gap: 10px;
+    }
+    .topbar-title { font-size: 14px; }
+    .topbar-subtitle { font-size: 11px; }
+
+    /* Content area */
+    .content-main {
+      padding: 12px;
+    }
+
+    /* Chat messages */
+    .chat-messages {
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .message {
+      max-width: 85%;
+      font-size: 14px;
+    }
+
+    /* Chat input */
+    .chat-input {
+      font-size: 16px; /* prevents iOS zoom */
+      padding: 12px 14px;
+    }
+    .chat-send-btn {
+      padding: 0 16px;
+      font-size: 14px;
+      min-width: 60px;
+    }
+
+    /* Chat list items: larger tap targets */
+    .chat-item {
+      padding: 16px 20px;
+    }
+    .chat-item-avatar {
+      width: 44px;
+      height: 44px;
+      font-size: 15px;
+    }
+    .chat-item-name { font-size: 14px; }
+    .chat-item-preview { font-size: 12.5px; }
+  }
+
+  /* ══════════════════════════════════════
+     RESPONSIVE: Small phones (≤480px)
+     ══════════════════════════════════════ */
+  @media (max-width: 480px) {
+    .topbar {
+      padding: 10px 12px;
+    }
+    .topbar-title { font-size: 13px; }
+    .topbar-subtitle { font-size: 10px; }
+
+    .content-main {
+      padding: 10px;
+    }
+
+    .chat-messages {
+      padding: 10px;
+      gap: 10px;
+    }
+    .message {
+      padding: 9px 12px;
+      font-size: 13.5px;
+    }
+
+    .chat-input-area {
+      gap: 8px;
+    }
+    .chat-input {
+      padding: 11px 12px;
+      font-size: 16px;
+    }
+    .chat-send-btn {
+      padding: 0 14px;
+      font-size: 13px;
+    }
+  }
 </style>
 </head>
 <body>
-<aside class="nav-sidebar">
+<aside class="nav-sidebar" id="navSidebar">
   <div class="sidebar-header">
    <img src="logo.png" alt="Synergy" style="height: 32px; width: auto; object-fit: contain; border-radius: 6px;">
   </div>
@@ -417,8 +591,9 @@
     </button>
   </div>
 </aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-<div class="chat-sidebar">
+<div class="chat-sidebar" id="chatSidebar">
   <div class="sidebar-header">
     <div class="sidebar-title">Support Chats</div>
     <div class="sidebar-subtitle">Select a user to chat</div>
@@ -428,8 +603,20 @@
   </ul>
 </div>
 
-<div class="main">
+<div class="main" id="mainChat">
   <div class="topbar">
+    <button class="back-btn" id="backBtn" aria-label="Back to chat list">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+    <button class="menu-btn" id="menuBtn" aria-label="Open navigation menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="7" x2="20" y2="7"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="17" x2="20" y2="17"/>
+      </svg>
+    </button>
     <div>
       <div class="topbar-title" id="chatTitle">Select a conversation</div>
       <div class="topbar-subtitle" id="chatSubtitle">—</div>
@@ -448,180 +635,231 @@
   </div>
 </div>
 
-  <script type="module">
-    import { auth, db } from './firebase-config.js';
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-    import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+<script>
+  // ===== UI LOGIC =====
+  const navSidebar = document.getElementById('navSidebar');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+  const menuBtn = document.getElementById('menuBtn');
+  const backBtn = document.getElementById('backBtn');
+  const mainChat = document.getElementById('mainChat');
+  const chatSidebar = document.getElementById('chatSidebar');
 
-    let currentChatId = null;
-    let unsubscribeMessages = null;
-    let currentUser = null;
-
-    // Simple admin check - in production use Firebase custom claims
-   // Simple admin check - compare with hardcoded admin email
-const ADMIN_EMAIL = 'admin@synergy.com'; 
-
-const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-  unsubscribeAuth();
-  if (!user) {
-    window.location.href = 'index.html';
-    return;
+  function toggleNavSidebar(force) {
+    var open = typeof force === 'boolean' ? force : !navSidebar.classList.contains('open');
+    navSidebar.classList.toggle('open', open);
+    sidebarBackdrop.classList.toggle('visible', open);
+    document.body.style.overflow = open ? 'hidden' : '';
   }
-  currentUser = user;
-  
-  if (user.email !== ADMIN_EMAIL) {
-    alert('Admin access only. Your email: ' + user.email);
-    window.location.href = 'dashboard.html';
-    return;
-  }
-  
-  loadChatList();
-});
 
-    function loadChatList() {
-      const chatList = document.getElementById('chatList');
-      const q = query(collection(db, "chats"), orderBy("lastTimestamp", "desc"));
+  menuBtn.addEventListener('click', function() { toggleNavSidebar(); });
+  sidebarBackdrop.addEventListener('click', function() { toggleNavSidebar(false); });
 
-      onSnapshot(q, (snapshot) => {
-        chatList.innerHTML = '';
-
-        if (snapshot.empty) {
-          chatList.innerHTML = '<li class="empty-state">No active chats</li>';
-          return;
-        }
-
-        snapshot.forEach((docSnap) => {
-          const chat = docSnap.data();
-          const li = document.createElement('li');
-          li.className = 'chat-item' + (docSnap.id === currentChatId ? ' active' : '');
-          li.dataset.chatId = docSnap.id;
-
-          const initial = chat.userEmail ? chat.userEmail[0].toUpperCase() : '?';
-          const time = chat.lastTimestamp 
-            ? chat.lastTimestamp.toDate().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'})
-            : '';
-
-          li.innerHTML = `
-            <div class="chat-item-avatar">${initial}</div>
-            <div class="chat-item-info">
-              <div class="chat-item-name">
-                ${escapeHtml(chat.userEmail || 'Unknown')}
-                ${chat.unreadByAdmin > 0 ? `<span class="unread-badge">${chat.unreadByAdmin}</span>` : ''}
-              </div>
-              <div class="chat-item-preview">${escapeHtml(chat.lastMessage || 'No messages yet')}</div>
-            </div>
-            <div class="chat-item-time">${time}</div>
-          `;
-
-          li.addEventListener('click', () => selectChat(docSnap.id, chat));
-          chatList.appendChild(li);
-        });
-      });
-    }
-
-    function selectChat(chatId, chatData) {
-      currentChatId = chatId;
-
-      // Update active state in sidebar
-      document.querySelectorAll('.chat-item').forEach(item => {
-        item.classList.toggle('active', item.dataset.chatId === chatId);
-      });
-
-      // Update header
-      document.getElementById('chatTitle').textContent = chatData.userEmail || 'Unknown User';
-      document.getElementById('chatSubtitle').textContent = 'User ID: ' + chatId.slice(0, 8);
-      document.getElementById('inputArea').style.display = 'flex';
-
-      // Mark as read by admin
-      updateDoc(doc(db, "chats", chatId), { unreadByAdmin: 0 });
-
-      // Listen for messages
-      const messagesQuery = query(
-        collection(db, "chats", chatId, "messages"),
-        orderBy("timestamp", "asc")
-      );
-
-      if (unsubscribeMessages) unsubscribeMessages();
-      unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
-        const container = document.getElementById('chatMessages');
-        container.innerHTML = '';
-
-        if (snapshot.empty) {
-          container.innerHTML = '<div class="empty-state">No messages yet</div>';
-          return;
-        }
-
-        snapshot.forEach((docSnap) => {
-          const msg = docSnap.data();
-          renderMessage(msg);
-        });
-        scrollToBottom();
-      });
-    }
-
-    function renderMessage(msg) {
-      const container = document.getElementById('chatMessages');
-      const isAdmin = msg.senderType === 'admin';
-      const div = document.createElement('div');
-      div.className = `message ${isAdmin ? 'sent' : 'received'}`;
-
-      const time = msg.timestamp 
-        ? msg.timestamp.toDate().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'})
-        : 'now';
-
-      div.innerHTML = `
-        ${escapeHtml(msg.text)}
-        <div class="message-time">${time}</div>
-      `;
-      container.appendChild(div);
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    function scrollToBottom() {
-      const container = document.getElementById('chatMessages');
-      container.scrollTop = container.scrollHeight;
-    }
-
-    async function sendReply() {
-      const input = document.getElementById('chatInput');
-      const text = input.value.trim();
-      if (!text || !currentChatId) return;
-
-      const sendBtn = document.getElementById('sendBtn');
-      sendBtn.disabled = true;
-
-      try {
-        await addDoc(collection(db, "chats", currentChatId, "messages"), {
-          senderId: currentUser.uid,
-          senderType: 'admin',
-          text: text,
-          timestamp: serverTimestamp()
-        });
-
-        await updateDoc(doc(db, "chats", currentChatId), {
-          lastMessage: text,
-          lastTimestamp: serverTimestamp(),
-          unreadByUser: 1
-        });
-
-        input.value = '';
-        sendBtn.disabled = false;
-      } catch (err) {
-        console.error(err);
-        sendBtn.disabled = false;
-        alert("Failed to send");
-      }
-    }
-
-    document.getElementById('sendBtn').addEventListener('click', sendReply);
-    document.getElementById('chatInput').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') sendReply();
+  // Close nav sidebar when a link is tapped on mobile
+  document.querySelectorAll('.nav-item').forEach(function(link) {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 768) toggleNavSidebar(false);
     });
-  </script>
+  });
+
+  // Auto-close nav sidebar on resize past breakpoint
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768 && navSidebar.classList.contains('open')) {
+      toggleNavSidebar(false);
+    }
+  });
+
+  // Mobile: back button returns to chat list
+  backBtn.addEventListener('click', function() {
+    if (window.innerWidth <= 768) {
+      mainChat.classList.remove('active');
+      chatSidebar.style.display = 'flex';
+    }
+  });
+
+  // Mobile: when chat selected, show main view
+  function showMobileChatView() {
+    if (window.innerWidth <= 768) {
+      chatSidebar.style.display = 'none';
+      mainChat.classList.add('active');
+    }
+  }
+</script>
+
+<script type="module">
+  import { auth, db } from './firebase-config.js';
+  import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+  import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+  let currentChatId = null;
+  let unsubscribeMessages = null;
+  let currentUser = null;
+
+  const ADMIN_EMAIL = 'admin@synergy.com'; 
+
+  const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+    unsubscribeAuth();
+    if (!user) {
+      window.location.href = 'index.html';
+      return;
+    }
+    currentUser = user;
+    
+    if (user.email !== ADMIN_EMAIL) {
+      alert('Admin access only. Your email: ' + user.email);
+      window.location.href = 'dashboard.html';
+      return;
+    }
+    
+    loadChatList();
+  });
+
+  function loadChatList() {
+    const chatList = document.getElementById('chatList');
+    const q = query(collection(db, "chats"), orderBy("lastTimestamp", "desc"));
+
+    onSnapshot(q, (snapshot) => {
+      chatList.innerHTML = '';
+
+      if (snapshot.empty) {
+        chatList.innerHTML = '<li class="empty-state">No active chats</li>';
+        return;
+      }
+
+      snapshot.forEach((docSnap) => {
+        const chat = docSnap.data();
+        const li = document.createElement('li');
+        li.className = 'chat-item' + (docSnap.id === currentChatId ? ' active' : '');
+        li.dataset.chatId = docSnap.id;
+
+        const initial = chat.userEmail ? chat.userEmail[0].toUpperCase() : '?';
+        const time = chat.lastTimestamp 
+          ? chat.lastTimestamp.toDate().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'})
+          : '';
+
+        li.innerHTML = `
+          <div class="chat-item-avatar">${initial}</div>
+          <div class="chat-item-info">
+            <div class="chat-item-name">
+              ${escapeHtml(chat.userEmail || 'Unknown')}
+              ${chat.unreadByAdmin > 0 ? `<span class="unread-badge">${chat.unreadByAdmin}</span>` : ''}
+            </div>
+            <div class="chat-item-preview">${escapeHtml(chat.lastMessage || 'No messages yet')}</div>
+          </div>
+          <div class="chat-item-time">${time}</div>
+        `;
+
+        li.addEventListener('click', () => selectChat(docSnap.id, chat));
+        chatList.appendChild(li);
+      });
+    });
+  }
+
+  function selectChat(chatId, chatData) {
+    currentChatId = chatId;
+
+    // Update active state in sidebar
+    document.querySelectorAll('.chat-item').forEach(item => {
+      item.classList.toggle('active', item.dataset.chatId === chatId);
+    });
+
+    // Update header
+    document.getElementById('chatTitle').textContent = chatData.userEmail || 'Unknown User';
+    document.getElementById('chatSubtitle').textContent = 'User ID: ' + chatId.slice(0, 8);
+    document.getElementById('inputArea').style.display = 'flex';
+
+    // Mobile: switch to chat view
+    if (typeof showMobileChatView === 'function') showMobileChatView();
+
+    // Mark as read by admin
+    updateDoc(doc(db, "chats", chatId), { unreadByAdmin: 0 });
+
+    // Listen for messages
+    const messagesQuery = query(
+      collection(db, "chats", chatId, "messages"),
+      orderBy("timestamp", "asc")
+    );
+
+    if (unsubscribeMessages) unsubscribeMessages();
+    unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+      const container = document.getElementById('chatMessages');
+      container.innerHTML = '';
+
+      if (snapshot.empty) {
+        container.innerHTML = '<div class="empty-state">No messages yet</div>';
+        return;
+      }
+
+      snapshot.forEach((docSnap) => {
+        const msg = docSnap.data();
+        renderMessage(msg);
+      });
+      scrollToBottom();
+    });
+  }
+
+  function renderMessage(msg) {
+    const container = document.getElementById('chatMessages');
+    const isAdmin = msg.senderType === 'admin';
+    const div = document.createElement('div');
+    div.className = `message ${isAdmin ? 'sent' : 'received'}`;
+
+    const time = msg.timestamp 
+      ? msg.timestamp.toDate().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'})
+      : 'now';
+
+    div.innerHTML = `
+      ${escapeHtml(msg.text)}
+      <div class="message-time">${time}</div>
+    `;
+    container.appendChild(div);
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function scrollToBottom() {
+    const container = document.getElementById('chatMessages');
+    container.scrollTop = container.scrollHeight;
+  }
+
+  async function sendReply() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text || !currentChatId) return;
+
+    const sendBtn = document.getElementById('sendBtn');
+    sendBtn.disabled = true;
+
+    try {
+      await addDoc(collection(db, "chats", currentChatId, "messages"), {
+        senderId: currentUser.uid,
+        senderType: 'admin',
+        text: text,
+        timestamp: serverTimestamp()
+      });
+
+      await updateDoc(doc(db, "chats", currentChatId), {
+        lastMessage: text,
+        lastTimestamp: serverTimestamp(),
+        unreadByUser: 1
+      });
+
+      input.value = '';
+      sendBtn.disabled = false;
+    } catch (err) {
+      console.error(err);
+      sendBtn.disabled = false;
+      alert("Failed to send");
+    }
+  }
+
+  document.getElementById('sendBtn').addEventListener('click', sendReply);
+  document.getElementById('chatInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendReply();
+  });
+</script>
 </body>
 </html>
